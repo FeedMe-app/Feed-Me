@@ -19,35 +19,43 @@
         android:textStyle="bold" />
 
 
+    //Email
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/signUp_email"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Email">
+        android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputEditText
+
+        <EditText
             android:id="@+id/main_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/colorPrimary" />
 
     </android.support.design.widget.TextInputLayout>
 
+    //Password
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/signUp_password"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Password">
+        android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputEditText
+
+        <EditText
             android:id="@+id/main_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
             android:hint="Password"
-            android:inputType="textPassword" />
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/colorPrimary" />
+
+
     </android.support.design.widget.TextInputLayout>
 
     <Button

@@ -66,19 +66,19 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
          final String yearOfBirth = yearOfBirth_SignUp.getText().toString();
 
          if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-             email_SignUp.setError("email required");
+             email_SignUp.setError(getString(R.string.email_required));
              email_SignUp.requestFocus();
              return;
          }
 
          if(password.length() < 6){
-             password_SignUp.setError("Password should be atleast 6 characters long");
+             password_SignUp.setError(getString(R.string.short_password));
              password_SignUp.requestFocus();
              return;
          }
 
         if(yearOfBirth.length() != 4){
-            yearOfBirth_SignUp.setError("Year should be 4 digits");
+            yearOfBirth_SignUp.setError(getString(R.string.short_tearOfBirth));
             yearOfBirth_SignUp.requestFocus();
             return;
         }
@@ -90,12 +90,12 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             RegularUser user = new RegularUser(firstName, lastName, email, password, yearOfBirth);
-                            FirebaseDatabase.getInstance().getReference().child(""+user.getUserID()).setValue(user)
+                            FirebaseDatabase.getInstance().getReference().child(""+user.getUserID()).push().setValue(user)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful()){
-                                        Toast.makeText(signUp.this, "Registration success!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(signUp.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
 
                                     }
 
@@ -112,10 +112,10 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
                                 throw task.getException();
                             }
                             catch (FirebaseAuthUserCollisionException existEmail){
-                                Log.d(email, "Email already exist!");
-                                Toast.makeText(signUp.this, "Email already exist", Toast.LENGTH_LONG).show();
+                                Log.d(email, getString(R.string.email_exist));
+                                Toast.makeText(signUp.this, getString(R.string.email_exist), Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
-                                Log.d(email, "Email already exist!" + e.getMessage());
+                                Log.d(email, getString(R.string.email_exist) + e.getMessage());
 
                             }
                         } //End else
