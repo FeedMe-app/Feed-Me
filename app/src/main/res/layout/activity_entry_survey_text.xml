@@ -62,11 +62,61 @@
                 android:textStyle="bold"
                 android:textSize="50px"
                 android:gravity="center"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="15dp"
                 />
 
         </LinearLayout>
 
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/KosherRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+            <RadioButton android:id="@+id/radio_kosher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/KosherLabel"/>
+            <RadioButton android:id="@+id/radio_notKosher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/NotKosherLabel"
+                android:layout_marginLeft="20dp"/>
+        </RadioGroup>
+
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/VeganRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+            <RadioButton android:id="@+id/radio_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/RegularLabel"/>
+            <RadioButton android:id="@+id/radio_vegetarian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/VegetarianLabel"
+                android:layout_marginLeft="16dp"/>
+            <RadioButton android:id="@+id/radio_vegan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/VeganLabel"
+                android:layout_marginLeft="20dp"/>
+        </RadioGroup>
+
+
+        <Button
+            android:id="@+id/nextBtn"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/nextBtnText"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
