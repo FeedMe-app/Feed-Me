@@ -1,5 +1,15 @@
 <resources>
     <string name="app_name">testFeedMe</string>
+    <string name="minimum_password">Password too short, enter minimum 6 characters!</string>
+    <string name="auth_failed">Authentication failed, check your email and password or sign up</string>
+    <string name="email_required">email required</string>
+    <string name="short_password">Password should be atleast 6 characters long</string>
+    <string name="short_tearOfBirth">Year should be 4 digits</string>
+    <string name="register_success">Registration success!</string>
+    <string name="email_exist">Email already exist!"</string>
+    <string name="login_successfully">Login successfully</string>
+    <string name="enter_email">Enter email address!</string>
+    <string name="enter_password">Enter password address!</string>
     <string name="EntrySurveyTestTitle">Entry Survey</string>
     <string name="Allergies">Allergies</string>
     <string name="KosherLabel">Kosher</string>
@@ -8,4 +18,5 @@
     <string name="VegetarianLabel">Vegetarian</string>
     <string name="VeganLabel">Vegan</string>
     <string name="nextBtnText">Next Stage</string>
+
 </resources>
