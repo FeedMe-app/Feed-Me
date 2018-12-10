@@ -22,7 +22,7 @@ public class RegularUser implements user{
         this.email = email;
         this.password = password;
         this.yearOfBirth = yearOfBirth;
-        allergies = new ArrayList<>();gir 
+        allergies = new ArrayList<>();
         top5FavMeal = new ArrayList<>();
         top10FavIngredients = new ArrayList<>();
         userClassification = new ArrayList<>();

@@ -9,6 +9,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     Button signIn, signUp, enterAsGuest;
@@ -25,6 +27,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         signUp = findViewById(R.id.main_signUp);
         signUp.setOnClickListener(this);
+
+        Button signInAsGuestBtn = findViewById(R.id.main_guest);
+        signInAsGuestBtn.setOnClickListener(this);
+
 //        signIn = findViewById(R.id.main_signIn);
 //        enterAsGuest = findViewById(R.id.main_guest);
 //        emailMain = findViewById(R.id.main_email);
@@ -49,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 //            case R.id.main_guest:
 //                signInWithFacebook();
 //                break;
+            case R.id.main_guest:
+                startActivity(new Intent(this, EntrySurveyText.class));
+                break;
 
             default:
                 break;
