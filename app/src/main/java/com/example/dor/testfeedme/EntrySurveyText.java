@@ -16,6 +16,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.example.dor.testfeedme.API.Utilities;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +50,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeListeners(){
+        GetAllIngrediets();
 
         InitializeTextViewListener();
 
@@ -72,7 +75,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton rb = findViewById(checkedId);
                 FoodType = rb.getText().toString();
-                ((TextView)findViewById(R.id.LabelId)).setText(FoodType);
             }
         });
     }
@@ -86,14 +88,13 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton rb = findViewById(checkedId);
                 isKosher = rb.getText().toString() == "Kosher" ? true : false;
-                ((TextView)findViewById(R.id.LabelId)).setText(rb.getText());
             }
         });
     }
 
     private void InitializeTextViewListener() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
-                GetAllIngrediets());
+                this.Ingredients);
         textView = findViewById(R.id.IngredientSearch);
         textView.setAdapter(adapter);
         textView.addTextChangedListener(new TextWatcher() {
@@ -105,7 +106,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.toString().trim().length()==0 ||
-                        !countries.contains(s.toString().trim())){
+                        !Ingredients.contains(s.toString().trim())){
                     addAllergyBtn.setEnabled(false);
                 } else {
                     addAllergyBtn.setEnabled(true);
@@ -118,8 +119,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             }
         });
     }
-
-    private static final List<String> countries = Arrays.asList("Belgium", "France", "Italy", "Germany", "Spain");
 
     @Override
     public void onClick(View v) {
@@ -135,7 +134,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         Allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
     }
 
-    private List<String> GetAllIngrediets(){
-        return countries;
+    private void GetAllIngrediets(){
+        this.Ingredients = Utilities.getIngredients();
     }
 }
