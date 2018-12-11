@@ -10,6 +10,14 @@
     <string name="login_successfully">Login successfully</string>
     <string name="enter_email">Enter email address!</string>
     <string name="enter_password">Enter password address!</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
+    <string name="btn_reset_password">Reset Password</string>
+    <string name="btn_back"><![CDATA[<< Back]]></string>
+    <string name="reset_password_msg1">We have sent you instructions to reset your password!</string>
+    <string name="reset_password_msg2">Failed to send reset email!</string>
+    <string name="register_mail">Enter your registered email</string>
+
 
 
 </resources>

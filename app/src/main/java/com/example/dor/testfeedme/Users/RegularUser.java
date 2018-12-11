@@ -29,6 +29,10 @@ public class RegularUser implements user{
         userID++;
     }
 
+    public RegularUser() {
+
+    }
+
     public int getUserID() {
         return userID;
     }
