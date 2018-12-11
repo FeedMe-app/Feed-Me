@@ -14,16 +14,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dor.testfeedme.Users.RegularUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     Button signIn, signUp, enterAsGuest;
     EditText emailMain, passwordMain;
-    //TextView forgotPasswordMain;
+    TextView forgotPasswordMain;
     private FirebaseAuth auth;
 
 
@@ -41,10 +47,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         emailMain = findViewById(R.id.main_email);
         passwordMain = findViewById(R.id.main_password);
         signIn.setOnClickListener(this);
-        //forgotPasswordMain = findViewById(R.id.main_ForgotPassword);
+        forgotPasswordMain = findViewById(R.id.main_ForgotPassword);
+        forgotPasswordMain.setOnClickListener(this);
         //enterAsGuest = findViewById(R.id.main_guest);
 
-    }
+
+            }
 
 
     public void onClick(View view){
@@ -58,10 +66,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             case R.id.main_signIn:
                     loginUser();
                 break;
-//
-//            case R.id.main_guest:
-//                signInWithFacebook();
-//                break;
+
+            case R.id.main_ForgotPassword:
+                Intent resetPasswordActivity = new Intent(MainActivity.this, ResetPassword.class);
+                startActivity(resetPasswordActivity);
+                break;
 
             default:
                 break;
@@ -109,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     }
                 });
     }
+
 
     }
 
