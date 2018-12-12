@@ -5,7 +5,7 @@ import java.util.List;
 
 public class RegularUser implements user{
 
-    private String firstName, lastName, email,password;
+    private String firstName, lastName, email;
     private String yearOfBirth;
     private List<String> allergies;
     private List<String> top5FavMeal;
@@ -16,11 +16,10 @@ public class RegularUser implements user{
 
     ////////////////Constructor////////////
 
-    public RegularUser(String firstName, String lastName, String email, String password, String yearOfBirth) {
+    public RegularUser(String firstName, String lastName, String email, String yearOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
         this.yearOfBirth = yearOfBirth;
         allergies = new ArrayList<>();
         top5FavMeal = new ArrayList<>();
@@ -50,10 +49,6 @@ public class RegularUser implements user{
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getYearOfBirth() {
         return yearOfBirth;
     }
@@ -68,10 +63,6 @@ public class RegularUser implements user{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public void setYearOfBirth(String yearOfBirth) {
