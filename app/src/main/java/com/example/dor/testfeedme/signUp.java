@@ -1,5 +1,6 @@
 package com.example.dor.testfeedme;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -52,9 +53,15 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
         switch (v.getId()){
             case R.id.signUp_button:
                 registerUser();
+                goToEntrySurvey();
                 break;
         }
 
+    }
+
+    private void goToEntrySurvey() {
+        Intent entrySurveyActivity = new Intent(signUp.this, EntrySurveyText.class);
+        startActivity(entrySurveyActivity);
     }
 
 

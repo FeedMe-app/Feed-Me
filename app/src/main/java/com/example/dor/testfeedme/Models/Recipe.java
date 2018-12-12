@@ -19,6 +19,8 @@ public class Recipe
         this.instructions = instructions;
     }
 
+    public Recipe(){}
+
     public String getImgUrl()
     {
         return imgUrl;

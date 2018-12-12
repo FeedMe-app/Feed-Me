@@ -25,6 +25,9 @@
     <string name="VegetarianLabel">Vegetarian</string>
     <string name="VeganLabel">Vegan</string>
     <string name="nextBtnText">Next Stage</string>
-
-
+    <string name="likeLabel">Like</string>
+    <string name="passLabel">Pass</string>
+    <string name="regCompletedLabel">Registration Completed!</string>
+    <string name="continueLabel">Continue</string>
+    <string name="chooseLabel">Please Choose</string>
 </resources>

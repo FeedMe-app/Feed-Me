@@ -1,6 +1,6 @@
 package com.example.dor.testfeedme.Models;
 
-class Ingredient
+public class Ingredient
 {
     String name;
 
