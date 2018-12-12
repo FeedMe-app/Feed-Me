@@ -1,24 +1,28 @@
 package com.example.dor.testfeedme.Models;
 
-class Label
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class Label
 {
-    String type;
+    String key;
     String value;
 
-    public Label(String type, String value)
+    public Label(String key, String value)
     {
-        this.type = type;
+        this.key = key;
         this.value = value;
     }
 
-    public String getType()
+    public String getKey()
     {
-        return type;
+        return key;
     }
 
-    public void setType(String type)
+    public void setKey(String type)
     {
-        this.type = type;
+        this.key = type;
     }
 
     public String getValue()
