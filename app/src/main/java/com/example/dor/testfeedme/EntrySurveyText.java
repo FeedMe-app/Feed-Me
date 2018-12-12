@@ -27,9 +27,10 @@ import java.util.concurrent.ExecutionException;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 
-    private List<String> suggestedAllergies;
+    private List<String> allergies;
     private List<String> Ingredients;
     private List<Recipe> recipes = new ArrayList<>();
+    private List<Recipe> chosenRecipes = new ArrayList<>();
     private Boolean isKosher;
     private String FoodType;
     private DownloadImageTask imageViewHandler;
@@ -56,7 +57,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         InitializeListeners();
 
-        suggestedAllergies = new ArrayList<>();
+        allergies = new ArrayList<>();
 
     }
 
@@ -154,7 +155,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.yesBtn:
-
+                HandleLikedRecipe();
                 break;
             case R.id.noBtn:
                 generateNewRecipe();
@@ -163,6 +164,11 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
                 CompleteRegistration();
                 break;
         }
+    }
+
+    private void HandleLikedRecipe() {
+        chosenRecipes.add(recipes.get(currRecipeIndex));
+        generateNewRecipe();
     }
 
     private boolean validateEntrySurveyText() {
@@ -203,7 +209,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void AddAllergy() {
-        suggestedAllergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
+        allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
     }
 
     private void GetAllIngredients(){
