@@ -49,10 +49,6 @@ public class RegularUser implements user{
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getYearOfBirth() {
         return yearOfBirth;
     }
@@ -67,10 +63,6 @@ public class RegularUser implements user{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public void setYearOfBirth(String yearOfBirth) {

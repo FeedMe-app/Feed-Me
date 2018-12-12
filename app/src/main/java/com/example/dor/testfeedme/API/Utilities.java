@@ -11,20 +11,20 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
 public class Utilities {
-    List<String> ingredients = new ArrayList<>();
-    int listSize;
-    public Utilities()
-    {
+    private static List<String> ingredients = new ArrayList<>();
 
-    }
-    public List<String> getIngredients()
+    public static List<String> getIngredients()
     {
-        return this.ingredients;
+        if (ingredients.size() == 0){
+            buildIngredientsList();
+        }
+        return ingredients;
     }
 
-    public void buildIngredientsList()
+    private static void buildIngredientsList()
     {
-        File dir = new File("./ingredients");
+        String ingredientsFolderPath = "src\\main\\java\\com\\example\\dor\\testfeedme\\API\\lib\\ingredients";
+        File dir = new File(ingredientsFolderPath);
         File[] directoryListing = dir.listFiles();
 
         for (File child : directoryListing) {
@@ -41,19 +41,7 @@ public class Utilities {
             JSONObject jsonObject = (JSONObject) obj;
             Set<String> keys = jsonObject.keySet();
             System.out.println(keys.toString());
-            this.ingredients.addAll(keys);
+            ingredients.addAll(keys);
         }
-        this.listSize = ingredients.size();
-
-    }
-
-    @Override
-    public String toString() {
-        String ans = "";
-        for(String s : this.ingredients) {
-            ans += s;
-
-        }
-        return ans;
     }
 }

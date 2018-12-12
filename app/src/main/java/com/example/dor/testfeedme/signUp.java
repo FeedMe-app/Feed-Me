@@ -89,7 +89,7 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            RegularUser user = new RegularUser(firstName, lastName, email, password, yearOfBirth);
+                            RegularUser user = new RegularUser(firstName, lastName, email, yearOfBirth);
                             FirebaseDatabase.getInstance().getReference().child("Users").push().setValue(user)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override

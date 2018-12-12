@@ -17,7 +17,14 @@
     <string name="reset_password_msg1">We have sent you instructions to reset your password!</string>
     <string name="reset_password_msg2">Failed to send reset email!</string>
     <string name="register_mail">Enter your registered email</string>
-
+    <string name="EntrySurveyTestTitle">Entry Survey</string>
+    <string name="Allergies">Allergies</string>
+    <string name="KosherLabel">Kosher</string>
+    <string name="NotKosherLabel">Not Kosher</string>
+    <string name="RegularLabel">Regular</string>
+    <string name="VegetarianLabel">Vegetarian</string>
+    <string name="VeganLabel">Vegan</string>
+    <string name="nextBtnText">Next Stage</string>
 
 
 </resources>

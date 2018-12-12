@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         signUp = findViewById(R.id.main_signUp);
         signUp.setOnClickListener(this);
+
+        Button signInAsGuestBtn = findViewById(R.id.main_guest);
+        signInAsGuestBtn.setOnClickListener(this);
+
         signIn = findViewById(R.id.main_signIn);
         emailMain = findViewById(R.id.main_email);
         passwordMain = findViewById(R.id.main_password);
@@ -70,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             case R.id.main_ForgotPassword:
                 Intent resetPasswordActivity = new Intent(MainActivity.this, ResetPassword.class);
                 startActivity(resetPasswordActivity);
-                break;
 
             default:
                 break;
