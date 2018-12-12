@@ -2,20 +2,21 @@ package com.example.dor.testfeedme.Models;
 
 public class Ingredient
 {
-    String name;
+    String key;
 
-    public Ingredient(String name)
+    public Ingredient(String key)
     {
-        this.name = name;
+        this.key = key;
     }
 
-    public String getName()
+    public String getKey()
     {
-        return name;
+        return key;
     }
 
-    public void setName(String name)
+    public void setKey(String type)
     {
-        this.name = name;
+        this.key = type;
     }
+
 }

@@ -1,22 +1,35 @@
 package com.example.dor.testfeedme.Models;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Recipe
 {
     String name;
     String imgUrl;
-    List<Ingredient> Ingredients;
-    List<Label> Labels;
-    List<String> instructions;
+    List<IngredientLine> ingredientLine;
+    List<Ingredient> ingredients;
+    List<Label> labels;
+    List<Instructions> instructions;
+    public Recipe()
+    {
+        this.name = "";
+        this.imgUrl = "";
+        this.ingredients = new ArrayList<>();
+        this.labels = new ArrayList<>();
+        this.instructions = new ArrayList<>();
+        this.ingredientLine = new ArrayList<>();
+    }
 
-    public Recipe(String name, String imgUrl, List<Ingredient> Ingredients, List<Label> Labels, List<String> instructions)
+    public Recipe(String name, String imgUrl, List<Ingredient> ingredients, List<Label> labels, List<Instructions> instructions, List<IngredientLine> ingredientLine)
     {
         this.name = name;
         this.imgUrl = imgUrl;
-        this.Ingredients = Ingredients;
-        this.Labels = Labels;
+        this.ingredients = ingredients;
+        this.labels = labels;
         this.instructions = instructions;
+        this.ingredientLine = ingredientLine;
     }
 
     public Recipe(){}
@@ -33,7 +46,7 @@ public class Recipe
 
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     public void setName(String name)
@@ -43,30 +56,38 @@ public class Recipe
 
     public List<Ingredient> getIngredients()
     {
-        return Ingredients;
+        return ingredients;
     }
 
     public void setIngredients(List<Ingredient> ingredients)
     {
-        Ingredients = ingredients;
+        ingredients = ingredients;
     }
 
     public List<Label> getLabels()
     {
-        return Labels;
+        return labels;
     }
 
     public void setLabels(List<Label> labels)
     {
-        Labels = labels;
+        labels = labels;
     }
 
-    public List<String> getInstructions()
+    public List<Instructions> getInstructions()
     {
         return instructions;
     }
 
-    public void setInstructions(List<String> instructions)
+    public List<IngredientLine> getIngredientLine() {
+        return ingredientLine;
+    }
+
+    public void setIngredientLine(List<IngredientLine> ingredientLine) {
+        this.ingredientLine = ingredientLine;
+    }
+
+    public void setInstructions(List<Instructions> instructions)
     {
         this.instructions = instructions;
     }
