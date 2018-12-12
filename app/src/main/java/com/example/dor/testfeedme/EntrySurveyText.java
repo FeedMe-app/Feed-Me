@@ -1,7 +1,6 @@
 package com.example.dor.testfeedme;
 
 import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,12 +21,11 @@ import com.example.dor.testfeedme.Models.DownloadImageTask;
 import com.example.dor.testfeedme.Models.Recipe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 
-    private List<String> Allergies;
+    private List<String> suggestedAllergies;
     private List<String> Ingredients;
     private List<Recipe> recipes = new ArrayList<>();
     private Boolean isKosher;
@@ -56,7 +54,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         InitializeListeners();
 
-        Allergies = new ArrayList<>();
+        suggestedAllergies = new ArrayList<>();
 
     }
 
@@ -197,7 +195,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void AddAllergy() {
-        Allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
+        suggestedAllergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
     }
 
     private void GetAllIngredients(){
