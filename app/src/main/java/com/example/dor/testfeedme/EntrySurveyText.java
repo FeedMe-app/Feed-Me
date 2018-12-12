@@ -1,5 +1,6 @@
 package com.example.dor.testfeedme;
 
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.example.dor.testfeedme.Models.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 
@@ -184,8 +186,14 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         currRecipeIndex++;
         if (currRecipeIndex < recipes.size()){
             imageViewHandler = new DownloadImageTask(im);
-            imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl());
-//            tv.setText(recipes.get(currRecipeIndex).getName());
+            try {
+                Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            tv.setText(recipes.get(currRecipeIndex).getName());
             return;
         }
         setContentView(R.layout.last_registration_layout);
@@ -199,19 +207,13 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void GetAllIngredients(){
-        this.Ingredients = Utilities.getIngredients(this);
+        Utilities.setContext(this);
+        this.Ingredients = Utilities.getIngredients();
     }
 
     private void getAllRecipes(){
-        // this.recipes = Utilities.getRecipes();
-        // delete rest
-        recipes = new ArrayList<Recipe>();
-        Recipe r1 = new Recipe();
-        r1.setImgUrl("https://picsum.photos/200/200");
-        recipes.add(r1);
-        Recipe r2 = new Recipe();
-        r2.setImgUrl("https://picsum.photos/300/300");
-        recipes.add(r2);
+        Utilities.setContext(this);
+        this.recipes = Utilities.buildTenRecipes();
     }
 
     public void goToImageSurvey(){
@@ -221,10 +223,15 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         im = findViewById(R.id.imageView);
         imageViewHandler = new DownloadImageTask(im);
-        imageViewHandler.execute("https://picsum.photos/200/200"); // remove
-        // imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl())
+        try {
+            Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         tv = findViewById(R.id.imageTitle);
-//        tv.setText(recipes.get(currRecipeIndex).getName());
+        tv.setText(recipes.get(currRecipeIndex).getName());
 
         likeBtn = findViewById(R.id.yesBtn);
         likeBtn.setOnClickListener(this);

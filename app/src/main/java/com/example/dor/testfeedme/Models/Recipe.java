@@ -32,7 +32,6 @@ public class Recipe
         this.ingredientLine = ingredientLine;
     }
 
-    public Recipe(){}
 
     public String getImgUrl()
     {

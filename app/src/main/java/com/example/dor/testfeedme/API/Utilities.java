@@ -10,11 +10,15 @@ import com.example.dor.testfeedme.Models.Ingredient;
 import com.example.dor.testfeedme.Models.IngredientLine;
 import com.example.dor.testfeedme.Models.Instructions;
 import com.example.dor.testfeedme.Models.Label;
+import com.example.dor.testfeedme.Models.Recipe;
+import com.example.dor.testfeedme.R;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,18 +30,23 @@ import org.json.simple.parser.*;
 
 
 public class Utilities {
+    private static Context context;
     private static List<String> ingredients = new ArrayList<>();
 
+    public static void setContext(Context _context){
+        context = _context;
+    }
 
-    public static List<String> getIngredients(Context context)
+
+    public static List<String> getIngredients()
     {
         if (ingredients.size() == 0){
-            buildIngredientsList(context);
+            buildIngredientsList();
         }
         return ingredients;
     }
 
-    private static void buildIngredientsList(Context context)
+    private static void buildIngredientsList()
     {
         ArrayList<Integer> res = new ArrayList<>();
         for (char ch = 'a'; ch <= 'z'; ch++){
@@ -63,9 +72,9 @@ public class Utilities {
     }
     public static Recipe loadRecipe(String name)
     {
-        String path = "/home/aviad/IdeaProjects/FeedMeAPI/src/lib/ten_recipes.json";
+        InputStream in = context.getResources().openRawResource(R.raw.ten_recipes);
         Recipe recipeObject = new Recipe();
-        JSONObject recipe = findRecipe(name,path);
+        JSONObject recipe = findRecipe(name,in);
         if(recipe != null)
         {
             String headline = (String)recipe.get("headline");
@@ -117,16 +126,15 @@ public class Utilities {
             return null;
         }
     }
-    public static JSONObject findRecipe(String name, String path)
+    public static JSONObject findRecipe(String name, InputStream in)
     {
         JSONParser jsonParser = new JSONParser();
-        Object object;
+        JSONObject jsonObj;
         try
         {
-            object=jsonParser.parse(new FileReader(path));
-            JSONObject jsonObject=(JSONObject)object;
+            jsonObj = (JSONObject)jsonParser.parse(new InputStreamReader(in, "UTF-8"));
 
-            JSONObject recipe = (JSONObject) jsonObject.get(name);
+            JSONObject recipe = (JSONObject)jsonObj.get(name);
             return recipe;
         }
         catch(Exception e)
@@ -150,26 +158,25 @@ public class Utilities {
         }
         return listOfKeyValuePair;
     }
-    public static List<Recipe> buildTenRecipes(String path)
+    public static List<Recipe> buildTenRecipes()
     {
         List<Recipe> listOfRecipes = new ArrayList<>();
+        InputStream in = context.getResources().openRawResource(R.raw.ten_recipes);
+        JSONObject jsonObj = new JSONObject();
         JSONParser jsonParser = new JSONParser();
-        Object object;
-        try
-        {
-            object = jsonParser.parse(new FileReader(path));
-            JSONObject jsonObject = (JSONObject) object;
-
-            for(Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext();)
+        try {
+            jsonObj = (JSONObject)jsonParser.parse(new InputStreamReader(in, "UTF-8"));
+            for(Iterator iterator = jsonObj.keySet().iterator(); iterator.hasNext();)
             {
                 String key = (String) iterator.next();
                 listOfRecipes.add(loadRecipe(key));
             }
-        }
-        catch(Exception e)
-        {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
+
         return listOfRecipes;
     }
 }
