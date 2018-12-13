@@ -35,6 +35,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private String FoodType;
     private DownloadImageTask imageViewHandler;
     private int currRecipeIndex = 0;
+    private final int MAXIMUM_CHOSEN_RECIPES = 10;
 
     private Button addAllergyBtn;
     private Button nextBtn;
@@ -142,6 +143,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -190,7 +192,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     private void generateNewRecipe() {
         currRecipeIndex++;
-        if (currRecipeIndex < recipes.size()){
+        if (chosenRecipes.size() < MAXIMUM_CHOSEN_RECIPES){
             imageViewHandler = new DownloadImageTask(im);
             try {
                 Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
@@ -213,17 +215,22 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void GetAllIngredients(){
-        Utilities.setContext(this);
+        setUtilitesContext();
         this.Ingredients = Utilities.getIngredients();
     }
 
-    private void getAllRecipes(){
+    private void setUtilitesContext(){
         Utilities.setContext(this);
-        this.recipes = Utilities.buildTenRecipes();
     }
 
+    private void getAllRecipes(){
+        setUtilitesContext();
+        this.recipes = Utilities.getRecipes();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void goToImageSurvey(){
-         getAllRecipes();
+        getAllRecipes();
 
         setContentView(R.layout.image_survey_layout);
 
@@ -238,6 +245,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         }
         tv = findViewById(R.id.imageTitle);
         tv.setText(recipes.get(currRecipeIndex).getName());
+
+        LinearLayout ll = findViewById(R.id.likePassLinearLayout);
+        ll.setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
 
         likeBtn = findViewById(R.id.yesBtn);
         likeBtn.setOnClickListener(this);

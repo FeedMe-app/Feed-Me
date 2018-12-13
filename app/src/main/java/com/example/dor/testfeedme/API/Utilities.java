@@ -72,9 +72,8 @@ public class Utilities {
     }
     public static Recipe loadRecipe(String name)
     {
-        InputStream in = context.getResources().openRawResource(R.raw.ten_recipes);
         Recipe recipeObject = new Recipe();
-        JSONObject recipe = findRecipe(name,in);
+        JSONObject recipe = findRecipe(name);
         if(recipe != null)
         {
             String headline = (String)recipe.get("headline");
@@ -126,8 +125,9 @@ public class Utilities {
             return null;
         }
     }
-    public static JSONObject findRecipe(String name, InputStream in)
+    public static JSONObject findRecipe(String name)
     {
+        InputStream in = context.getResources().openRawResource(R.raw.recipe_data);
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObj;
         try
@@ -158,11 +158,11 @@ public class Utilities {
         }
         return listOfKeyValuePair;
     }
-    public static List<Recipe> buildTenRecipes()
+    public static List<Recipe> getRecipes()
     {
         List<Recipe> listOfRecipes = new ArrayList<>();
-        InputStream in = context.getResources().openRawResource(R.raw.ten_recipes);
-        JSONObject jsonObj = new JSONObject();
+        InputStream in = context.getResources().openRawResource(R.raw.recipe_data);
+        JSONObject jsonObj;
         JSONParser jsonParser = new JSONParser();
         try {
             jsonObj = (JSONObject)jsonParser.parse(new InputStreamReader(in, "UTF-8"));
