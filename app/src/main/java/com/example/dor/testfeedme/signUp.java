@@ -52,8 +52,14 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.signUp_button:
                 registerUser();
+                goToEntrySurvey();
                 break;
         }
+    }
+
+    private void goToEntrySurvey() {
+        Intent entrySurveyActivity = new Intent(signUp.this, EntrySurveyText.class);
+        startActivity(entrySurveyActivity);
     }
 
 
@@ -96,8 +102,8 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
 //                            user.setTop10FavIngredients(in);
 //                            user.setTop10FavIngredients(two);
 
-                                db.child("Top10Ingredients").child(user.getEmail().replace(".", "|"))
-                                        .setValue(user.getTop10FavIngredients());
+                            db.child("Top10Ingredients").child(user.getEmail().replace(".", "|"))
+                                    .setValue(user.getTop10FavIngredients());
 
                             db.child("top5Meal").child(user.getEmail().replace(".", "|"))
                                     .setValue(user.getTop5FavMeal());

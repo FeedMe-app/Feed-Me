@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dor.testfeedme.API.Utilities;
+import com.example.dor.testfeedme.Users.RegularUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -66,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             case R.id.main_ForgotPassword:
                 Intent resetPasswordActivity = new Intent(MainActivity.this, ResetPassword.class);
                 startActivity(resetPasswordActivity);
+
+            case R.id.main_guest:
+                Intent entrySurveyActivity = new Intent(MainActivity.this, EntrySurveyText.class);
+                startActivity(entrySurveyActivity);
 
             default:
                 break;
