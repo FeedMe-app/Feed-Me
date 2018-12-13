@@ -30,4 +30,5 @@
     <string name="regCompletedLabel">Registration Completed!</string>
     <string name="continueLabel">Continue</string>
     <string name="chooseLabel">Please Choose</string>
+    <string name="DislikesLabel">Dislikes</string>
 </resources>

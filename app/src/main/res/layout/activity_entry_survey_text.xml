@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:ems="15"
+                android:ems="10"
                 android:hint="@string/Allergies"/>
 
             <Button
@@ -63,6 +63,40 @@
                 android:textSize="50px"
                 android:gravity="center"
                 android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/DislikesLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/DislikesSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:ems="10"
+                android:hint="@string/DislikesLabel"/>
+
+            <Button
+                android:id="@+id/addDisklikeBtn"
+                style="?android:textAppearanceSmall"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary"
+                android:text="+"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="50px"
+                android:gravity="center"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
                 />
 
         </LinearLayout>
@@ -77,7 +111,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="@string/KosherLabel"/>
+                android:text="@string/KosherLabel"
+                android:checked="true"/>
             <RadioButton android:id="@+id/radio_notKosher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,13 +131,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="@string/RegularLabel"/>
+                android:text="@string/RegularLabel"
+                android:checked="true"/>
             <RadioButton android:id="@+id/radio_vegetarian"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
                 android:text="@string/VegetarianLabel"
-                android:layout_marginLeft="16dp"/>
+                android:layout_marginLeft="17dp"/>
             <RadioButton android:id="@+id/radio_vegan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

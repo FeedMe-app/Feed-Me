@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 
     private List<String> allergies;
+    private List<String> dislikes;
     private List<String> Ingredients;
     private List<Recipe> recipes = new ArrayList<>();
     private List<Recipe> chosenRecipes = new ArrayList<>();
@@ -38,11 +39,11 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private final int MAXIMUM_CHOSEN_RECIPES = 10;
 
     private Button addAllergyBtn;
+    private Button addDislikeBtn;
     private Button nextBtn;
     private Button likeBtn;
     private Button passBtn;
     private Button continueBtn;
-    private AutoCompleteTextView textView;
     private RadioGroup KosherRadioGroup;
     private RadioGroup VeganRadioGroup;
     private ImageView im;
@@ -55,21 +56,25 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_entry_survey_text);
 
         findViewById(R.id.AllergiesLinearLayout).setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
+        findViewById(R.id.DislikesLinearLayout).setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
 
         InitializeListeners();
 
         allergies = new ArrayList<>();
-
+        dislikes = new ArrayList<>();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeListeners(){
         GetAllIngredients();
 
-        InitializeTextViewListener();
+        InitializeTextViewListeners();
 
         addAllergyBtn = findViewById(R.id.addAllergyBtn);
         addAllergyBtn.setOnClickListener(this);
+
+        addDislikeBtn = findViewById(R.id.addDisklikeBtn);
+        addDislikeBtn.setOnClickListener(this);
 
         nextBtn = findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(this);
@@ -115,12 +120,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void InitializeTextViewListener() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
-                this.Ingredients);
-        textView = findViewById(R.id.IngredientSearch);
-        textView.setAdapter(adapter);
-        textView.addTextChangedListener(new TextWatcher() {
+    private void InitializeTextViewListener(int tvId, final int btnId){
+
+        ((AutoCompleteTextView)findViewById(tvId)).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -130,9 +132,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.toString().trim().length()==0 ||
                         !Ingredients.contains(s.toString().trim())){
-                    addAllergyBtn.setEnabled(false);
+                    findViewById(btnId).setEnabled(false);
                 } else {
-                    addAllergyBtn.setEnabled(true);
+                    findViewById(btnId).setEnabled(true);
                 }
             }
 
@@ -143,18 +145,33 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+
+    private void InitializeTextViewListeners() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
+                this.Ingredients);
+
+        ((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).setAdapter(adapter);
+        InitializeTextViewListener(R.id.IngredientSearch, R.id.addAllergyBtn);
+
+        ((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).setAdapter(adapter);
+        InitializeTextViewListener(R.id.DislikesSearch, R.id.addDisklikeBtn);
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.addAllergyBtn:
                 AddAllergy();
-                textView.setText("");
+                ((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).setText("");
+                break;
+            case R.id.addDisklikeBtn:
+                addDislike();
+                ((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).setText("");
                 break;
             case R.id.nextBtn:
-                if (validateEntrySurveyText()){
-                    goToImageSurvey();
-                }
+                goToImageSurvey();
                 break;
             case R.id.yesBtn:
                 HandleLikedRecipe();
@@ -168,23 +185,13 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void addDislike() {
+        dislikes.add(((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).getText().toString());
+    }
+
     private void HandleLikedRecipe() {
         chosenRecipes.add(recipes.get(currRecipeIndex));
         generateNewRecipe();
-    }
-
-    private boolean validateEntrySurveyText() {
-        Boolean rc = false;
-        if (KosherRadioGroup.getCheckedRadioButtonId() == -1){
-            ((RadioButton)findViewById(R.id.radio_kosher)).setError(getString(R.string.chooseLabel));
-        }
-        else if (VeganRadioGroup.getCheckedRadioButtonId() == -1){
-            ((RadioButton)findViewById(R.id.radio_regular)).setError(getString(R.string.chooseLabel));
-        }
-        else{
-            rc = true;
-        }
-        return rc;
     }
 
     private void CompleteRegistration() {
