@@ -1,5 +1,6 @@
 package com.example.dor.testfeedme;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,20 +11,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.dor.testfeedme.Models.Ingredient;
+import com.example.dor.testfeedme.Models.IngredientsList;
+import com.example.dor.testfeedme.Models.Recipe;
 import com.example.dor.testfeedme.Users.RegularUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class signUp extends AppCompatActivity implements View.OnClickListener{
+import java.util.List;
+
+public class signUp extends AppCompatActivity implements View.OnClickListener {
 
     EditText email_SignUp, password_SignUp, firstName_SignUp, lastName_SignUp, yearOfBirth_SignUp;
     Button signUpButton;
     private FirebaseAuth mAuth;
-
+    DatabaseReference db;
 
 
     @Override
@@ -40,44 +50,41 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
         signUpButton = findViewById(R.id.signUp_button);
         //Firebase
         mAuth = FirebaseAuth.getInstance();
-
+        db = FirebaseDatabase.getInstance().getReference();
         signUpButton.setOnClickListener(this);
-
 
     }
 
-
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.signUp_button:
                 registerUser();
                 break;
         }
-
     }
 
 
-    public void registerUser(){
+    public void registerUser() {
         final String firstName = firstName_SignUp.getText().toString();
         final String lastName = lastName_SignUp.getText().toString();
         final String email = email_SignUp.getText().toString();
         final String password = password_SignUp.getText().toString();
         final String yearOfBirth = yearOfBirth_SignUp.getText().toString();
 
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             email_SignUp.setError(getString(R.string.email_required));
             email_SignUp.requestFocus();
             return;
         }
 
-        if(password.length() < 6){
+        if (password.length() < 6) {
             password_SignUp.setError(getString(R.string.short_password));
             password_SignUp.requestFocus();
             return;
         }
 
-        if(yearOfBirth.length() != 4){
+        if (yearOfBirth.length() != 4) {
             yearOfBirth_SignUp.setError(getString(R.string.short_tearOfBirth));
             yearOfBirth_SignUp.requestFocus();
             return;
@@ -88,30 +95,31 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            RegularUser user = new RegularUser(firstName, lastName, email, yearOfBirth);
-                            FirebaseDatabase.getInstance().getReference().child("Users").push().setValue(user)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()){
-                                                Toast.makeText(signUp.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
+                        if (task.isSuccessful()) {
+                            final RegularUser user = new RegularUser(firstName, lastName, email, yearOfBirth);
+                            db.child("Users").child(user.getEmail().replace(".", "|")).setValue(user);
 
-                                            }
+//                            Ingredient in = new Ingredient("Salt");
+//                            Ingredient two = new Ingredient("pepper");
+//                            user.setTop10FavIngredients(in);
+//                            user.setTop10FavIngredients(two);
 
-                                            else{
-                                                //display ant message
-                                            }
-                                        }
-                                    });
-                        }//End-if
+                                db.child("Top10Ingredients").child(user.getEmail().replace(".", "|"))
+                                        .setValue(user.getTop10FavIngredients());
+
+                            db.child("top5Meal").child(user.getEmail().replace(".", "|"))
+                                    .setValue(user.getTop5FavMeal());
 
 
-                        else{
-                            try{
+                            Toast.makeText(signUp.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
+                            Intent login = new Intent(signUp.this, MainActivity.class);
+                            startActivity(login);
+                        }//End-if isSuccessful
+
+                        else {
+                            try {
                                 throw task.getException();
-                            }
-                            catch (FirebaseAuthUserCollisionException existEmail){
+                            } catch (FirebaseAuthUserCollisionException existEmail) {
                                 Log.d(email, getString(R.string.email_exist));
                                 Toast.makeText(signUp.this, getString(R.string.email_exist), Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
@@ -120,6 +128,7 @@ public class signUp extends AppCompatActivity implements View.OnClickListener{
                             }
                         } //End else
                     }
+
                 });
     }
 
