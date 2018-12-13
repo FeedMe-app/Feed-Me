@@ -1,7 +1,7 @@
 package com.example.dor.testfeedme;
 
+import android.graphics.Bitmap;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,28 +11,41 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.dor.testfeedme.API.Utilities;
+import com.example.dor.testfeedme.Models.DownloadImageTask;
+import com.example.dor.testfeedme.Models.Recipe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 
-    private List<String> Allergies;
+    private List<String> allergies;
     private List<String> Ingredients;
+    private List<Recipe> recipes = new ArrayList<>();
+    private List<Recipe> chosenRecipes = new ArrayList<>();
     private Boolean isKosher;
     private String FoodType;
+    private DownloadImageTask imageViewHandler;
+    private int currRecipeIndex = 0;
 
     private Button addAllergyBtn;
+    private Button nextBtn;
+    private Button likeBtn;
+    private Button passBtn;
+    private Button continueBtn;
     private AutoCompleteTextView textView;
     private RadioGroup KosherRadioGroup;
     private RadioGroup VeganRadioGroup;
+    private ImageView im;
+    private TextView tv;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -44,18 +57,21 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         InitializeListeners();
 
-        Allergies = new ArrayList<>();
+        allergies = new ArrayList<>();
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeListeners(){
-        GetAllIngrediets();
+        GetAllIngredients();
 
         InitializeTextViewListener();
 
         addAllergyBtn = findViewById(R.id.addAllergyBtn);
         addAllergyBtn.setOnClickListener(this);
+
+        nextBtn = findViewById(R.id.nextBtn);
+        nextBtn.setOnClickListener(this);
 
         InitializeRadioGroupsListeners();
     }
@@ -75,6 +91,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton rb = findViewById(checkedId);
                 FoodType = rb.getText().toString();
+                if (((RadioButton)findViewById(R.id.radio_regular)).getError() != null){
+                    ((RadioButton)findViewById(R.id.radio_regular)).setError(null);
+                }
             }
         });
     }
@@ -88,6 +107,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton rb = findViewById(checkedId);
                 isKosher = rb.getText().toString() == "Kosher" ? true : false;
+                if (((RadioButton)findViewById(R.id.radio_kosher)).getError() != null){
+                    ((RadioButton)findViewById(R.id.radio_kosher)).setError(null);
+                }
             }
         });
     }
@@ -127,14 +149,102 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
                 AddAllergy();
                 textView.setText("");
                 break;
+            case R.id.nextBtn:
+                if (validateEntrySurveyText()){
+                    goToImageSurvey();
+                }
+                break;
+            case R.id.yesBtn:
+                HandleLikedRecipe();
+                break;
+            case R.id.noBtn:
+                generateNewRecipe();
+                break;
+            case R.id.continueBtn:
+                CompleteRegistration();
+                break;
         }
     }
 
-    private void AddAllergy() {
-        Allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
+    private void HandleLikedRecipe() {
+        chosenRecipes.add(recipes.get(currRecipeIndex));
+        generateNewRecipe();
     }
 
-    private void GetAllIngrediets(){
+    private boolean validateEntrySurveyText() {
+        Boolean rc = false;
+        if (KosherRadioGroup.getCheckedRadioButtonId() == -1){
+            ((RadioButton)findViewById(R.id.radio_kosher)).setError(getString(R.string.chooseLabel));
+        }
+        else if (VeganRadioGroup.getCheckedRadioButtonId() == -1){
+            ((RadioButton)findViewById(R.id.radio_regular)).setError(getString(R.string.chooseLabel));
+        }
+        else{
+            rc = true;
+        }
+        return rc;
+    }
+
+    private void CompleteRegistration() {
+    }
+
+    private void generateNewRecipe() {
+        currRecipeIndex++;
+        if (currRecipeIndex < recipes.size()){
+            imageViewHandler = new DownloadImageTask(im);
+            try {
+                Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            tv.setText(recipes.get(currRecipeIndex).getName());
+            return;
+        }
+        setContentView(R.layout.last_registration_layout);
+
+        continueBtn = findViewById(R.id.continueBtn);
+        continueBtn.setOnClickListener(this);
+    }
+
+    private void AddAllergy() {
+        allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
+    }
+
+    private void GetAllIngredients(){
+        Utilities.setContext(this);
         this.Ingredients = Utilities.getIngredients();
     }
+
+    private void getAllRecipes(){
+        Utilities.setContext(this);
+        this.recipes = Utilities.buildTenRecipes();
+    }
+
+    public void goToImageSurvey(){
+         getAllRecipes();
+
+        setContentView(R.layout.image_survey_layout);
+
+        im = findViewById(R.id.imageView);
+        imageViewHandler = new DownloadImageTask(im);
+        try {
+            Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        tv = findViewById(R.id.imageTitle);
+        tv.setText(recipes.get(currRecipeIndex).getName());
+
+        likeBtn = findViewById(R.id.yesBtn);
+        likeBtn.setOnClickListener(this);
+
+        passBtn = findViewById(R.id.noBtn);
+        passBtn.setOnClickListener(this);
+    }
+
+
 }
