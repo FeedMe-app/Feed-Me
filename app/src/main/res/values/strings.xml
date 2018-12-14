@@ -31,4 +31,6 @@
     <string name="continueLabel">Continue</string>
     <string name="chooseLabel">Please Choose</string>
     <string name="DislikesLabel">Dislikes</string>
+    <string name="requiredError">Field is required</string>
+    <string name="onlyLettersError">Use letters only</string>
 </resources>

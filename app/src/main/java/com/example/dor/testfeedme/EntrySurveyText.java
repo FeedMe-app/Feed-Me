@@ -1,12 +1,15 @@
 package com.example.dor.testfeedme;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -16,13 +19,30 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dor.testfeedme.API.Utilities;
 import com.example.dor.testfeedme.Models.DownloadImageTask;
+import com.example.dor.testfeedme.Models.Ingredient;
+import com.example.dor.testfeedme.Models.IngredientLine;
 import com.example.dor.testfeedme.Models.Recipe;
+import com.example.dor.testfeedme.Users.RegularUser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
@@ -37,6 +57,10 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private DownloadImageTask imageViewHandler;
     private int currRecipeIndex = 0;
     private final int MAXIMUM_CHOSEN_RECIPES = 10;
+    private RegularUser newUser;
+    private String newUserPassword;
+    private FirebaseAuth mAuth;
+    private DatabaseReference db;
 
     private Button addAllergyBtn;
     private Button addDislikeBtn;
@@ -62,6 +86,118 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         allergies = new ArrayList<>();
         dislikes = new ArrayList<>();
+
+        Bundle data = getIntent().getExtras();
+        newUser = data.getParcelable("newUser");
+        newUserPassword = data.getString("userPassword");
+
+        //Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance().getReference();
+    }
+
+
+        public void registerUser() {
+        /////Add user to Database/////
+        mAuth.createUserWithEmailAndPassword(newUser.getEmail(), newUserPassword)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            db.child("Users").child(newUser.getEmail().replace(".", "|")).setValue(newUser);
+
+                            newUser.setAllergies(allergies);
+                            newUser.setDislikes(dislikes);
+                            newUser.setTop5FavMeal(GetTop5Recipes());
+                            newUser.setTop10FavIngredients(GetTop10Ingreds());
+
+                            db.child("Allergies").child(newUser.getEmail().replace(".", "|"))
+                                    .setValue(newUser.getAllergies());
+
+                            db.child("Dislikes").child(newUser.getEmail().replace(".", "|"))
+                                    .setValue(newUser.getDislikes());
+
+                            db.child("Top10Ingredients").child(newUser.getEmail().replace(".", "|"))
+                                    .setValue(newUser.getTop10FavIngredients());
+
+                            db.child("top5Meal").child(newUser.getEmail().replace(".", "|"))
+                                    .setValue(newUser.getTop5FavMeal());
+
+
+                            Toast.makeText(EntrySurveyText.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
+                            Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
+                            startActivity(login);
+                        }//End-if isSuccessful
+
+                        else {
+                            try {
+                                throw task.getException();
+                            } catch (FirebaseAuthUserCollisionException existEmail) {
+                                Log.d(newUser.getEmail(), getString(R.string.email_exist));
+                                Toast.makeText(EntrySurveyText.this, getString(R.string.email_exist), Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                Log.d(newUser.getEmail(), getString(R.string.email_exist) + e.getMessage());
+
+                            }
+                        } //End else
+                    }
+                });
+    }
+
+    private List<String> GetTop10Ingreds() {
+        List<String> rc = new ArrayList<>();
+        HashMap<Ingredient, Integer> ingredsCount = new HashMap<>();
+        List<Ingredient> ingreds = new ArrayList<>();
+        for (Recipe rec : chosenRecipes){
+            ingreds.addAll(rec.getIngredients());
+        }
+        for (Ingredient ingred : ingreds){
+            if (ingredsCount.containsKey(ingred)){
+                ingredsCount.put(ingred, ingredsCount.get(ingred) + 1);
+            }
+            else {
+                ingredsCount.put(ingred, 1);
+            }
+        }
+        ingredsCount = sortMap(ingredsCount);
+        int counter = 0;
+        for (Ingredient in : ingredsCount.keySet()){
+            counter++;
+            if (counter < 10){
+                rc.add(in.getKey());
+            }
+        }
+
+        return rc;
+    }
+
+    private HashMap<Ingredient, Integer> sortMap(HashMap<Ingredient, Integer> map) {
+        List<Map.Entry<Ingredient, Integer>> capitalList = new LinkedList<>(map.entrySet());
+
+        Collections.sort(capitalList, new Comparator<Map.Entry<Ingredient, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Ingredient, Integer> o1, Map.Entry<Ingredient, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+
+        Collections.reverse(capitalList);
+
+        HashMap<Ingredient, Integer> result = new HashMap<>();
+        for (Map.Entry<Ingredient, Integer> entry : capitalList)
+        {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
+    }
+
+    private List<String> GetTop5Recipes() {
+        List<String> rc = new ArrayList<>();
+        for (int i = 0; i < 5; i++){
+            rc.add(chosenRecipes.get(i).getName());
+        }
+        return rc;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -195,6 +331,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void CompleteRegistration() {
+        registerUser();
     }
 
     private void generateNewRecipe() {
