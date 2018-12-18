@@ -16,10 +16,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.example.dor.testfeedme.API.Utilities;
 import com.example.dor.testfeedme.Models.DownloadImageTask;
@@ -43,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
@@ -50,8 +53,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private List<String> allergies;
     private List<String> dislikes;
     private List<String> Ingredients;
-    private List<Recipe> recipes = new ArrayList<>();
+    private List<String> recipes = new ArrayList<>();
     private List<Recipe> chosenRecipes = new ArrayList<>();
+    private List<Recipe> chunckOfTenRecipes = new ArrayList<>();
     private Boolean isKosher;
     private String FoodType;
     private DownloadImageTask imageViewHandler;
@@ -61,6 +65,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private String newUserPassword;
     private FirebaseAuth mAuth;
     private DatabaseReference db;
+
 
     private Button addAllergyBtn;
     private Button addDislikeBtn;
@@ -86,7 +91,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         allergies = new ArrayList<>();
         dislikes = new ArrayList<>();
-
+        getAllRecipes();
+        loadTenRecipes();
         Bundle data = getIntent().getExtras();
         newUser = data.getParcelable("newUser");
         newUserPassword = data.getString("userPassword");
@@ -96,8 +102,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         db = FirebaseDatabase.getInstance().getReference();
     }
 
-
-        public void registerUser() {
+    public void registerUser() {
         /////Add user to Database/////
         mAuth.createUserWithEmailAndPassword(newUser.getEmail(), newUserPassword)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -326,7 +331,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void HandleLikedRecipe() {
-        chosenRecipes.add(recipes.get(currRecipeIndex));
+        chosenRecipes.add(chunckOfTenRecipes.get(currRecipeIndex));
         generateNewRecipe();
     }
 
@@ -335,17 +340,26 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void generateNewRecipe() {
-        currRecipeIndex++;
         if (chosenRecipes.size() < MAXIMUM_CHOSEN_RECIPES){
+            currRecipeIndex++;
+            if (currRecipeIndex == chunckOfTenRecipes.size())
+            {
+
+                loadTenRecipes();
+                currRecipeIndex = 1;
+
+            }
+            Recipe currRec = chunckOfTenRecipes.get(currRecipeIndex);
             imageViewHandler = new DownloadImageTask(im);
             try {
-                Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+                //Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+                Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            tv.setText(recipes.get(currRecipeIndex).getName());
+            tv.setText(currRec.getName());
             return;
         }
         setContentView(R.layout.last_registration_layout);
@@ -372,23 +386,40 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         this.recipes = Utilities.getRecipes();
     }
 
+    private void loadTenRecipes() {
+        chunckOfTenRecipes = new ArrayList<>();
+        Random rand = new Random();
+        int randNum = rand.nextInt(recipes.size() - 10);
+        for (int i=0; i<10 ; i++)
+        {
+            chunckOfTenRecipes.add(Utilities.loadRecipe(recipes.get(randNum)));
+            randNum += 1;
+        }
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void goToImageSurvey(){
-        getAllRecipes();
-
+        currRecipeIndex++;
         setContentView(R.layout.image_survey_layout);
-
         im = findViewById(R.id.imageView);
         imageViewHandler = new DownloadImageTask(im);
+        Recipe currRec = chunckOfTenRecipes.get(currRecipeIndex);
+        if (currRecipeIndex == chunckOfTenRecipes.size())
+        {
+            loadTenRecipes();
+            currRecipeIndex = 1;
+        }
         try {
-            Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+           // Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+            Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         tv = findViewById(R.id.imageTitle);
-        tv.setText(recipes.get(currRecipeIndex).getName());
+        tv.setText(currRec.getName());
 
         LinearLayout ll = findViewById(R.id.likePassLinearLayout);
         ll.setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
@@ -398,6 +429,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         passBtn = findViewById(R.id.noBtn);
         passBtn.setOnClickListener(this);
+
     }
 
 
