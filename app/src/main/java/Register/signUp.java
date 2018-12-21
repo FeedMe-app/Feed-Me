@@ -1,33 +1,21 @@
 package com.example.dor.testfeedme;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.dor.testfeedme.Users.RegularUser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
+import Database.Server;
 
 public class signUp extends AppCompatActivity implements View.OnClickListener {
 
     EditText email_SignUp, password_SignUp, firstName_SignUp, lastName_SignUp, yearOfBirth_SignUp;
     Button signUpButton;
-    private FirebaseAuth mAuth;
-    DatabaseReference db;
 
 
     @Override
@@ -42,18 +30,32 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
         lastName_SignUp = findViewById(R.id.signUp_lastName);
         yearOfBirth_SignUp = findViewById(R.id.signUp_yearOfBirth);
         signUpButton = findViewById(R.id.signUp_button);
-        //Firebase
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance().getReference();
         signUpButton.setOnClickListener(this);
+
 
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+
             case R.id.signUp_button:
-//                registerUser();
+
+                //Check if email exists
+                Server sv = new Server();
+                sv.checkIfEmailExists(email_SignUp.getText().toString(), new OnEmailCheckListener() {
+                    @Override
+                    public void onSucess(Boolean emailExist) {
+                        if(!emailExist){
+                            email_SignUp.setError(getString(R.string.email_exist));
+                            email_SignUp.requestFocus();
+                        }
+                    }
+
+                });
+                //End function
+
+                //Check details user
                 if (ValidateFields()){
                     goToEntrySurvey();
                 }
@@ -64,11 +66,15 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
     private void goToEntrySurvey() {
         Intent entrySurveyActivity = new Intent(signUp.this, EntrySurveyText.class);
         RegularUser user = new RegularUser(firstName_SignUp.getText().toString(),
-                                            lastName_SignUp.getText().toString(),
-                                            email_SignUp.getText().toString(),
-                                            yearOfBirth_SignUp.getText().toString());
+                lastName_SignUp.getText().toString(),
+                email_SignUp.getText().toString(),
+                yearOfBirth_SignUp.getText().toString());
+        //Add new user to firebase
+        Server server = new Server(user, password_SignUp.getText().toString());
+        server.registerNewUser();
+        //Full register
         entrySurveyActivity.putExtra("newUser", user);
-        entrySurveyActivity.putExtra("userPassword", password_SignUp.getText().toString());
+        //entrySurveyActivity.putExtra("userPassword", password_SignUp.getText().toString());
         startActivity(entrySurveyActivity);
     }
 
@@ -80,24 +86,6 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
         final String email = email_SignUp.getText().toString();
         final String password = password_SignUp.getText().toString();
         final String yearOfBirth = yearOfBirth_SignUp.getText().toString();
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            email_SignUp.setError(getString(R.string.email_required));
-            email_SignUp.requestFocus();
-            rc = false;
-        }
-
-        if (password.length() < 6) {
-            password_SignUp.setError(getString(R.string.short_password));
-            password_SignUp.requestFocus();
-            rc = false;
-        }
-
-        if (yearOfBirth.length() != 4) {
-            yearOfBirth_SignUp.setError(getString(R.string.short_tearOfBirth));
-            yearOfBirth_SignUp.requestFocus();
-            rc = false;
-        }
 
         if (!firstName.matches("[a-zA-Z]+")){
             String msg;
@@ -112,7 +100,8 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
             rc = false;
         }
 
-        if (!lastName.matches("[a-zA-Z]+")){
+
+        else if (!lastName.matches("[a-zA-Z]+")){
             String msg;
             if (lastName.isEmpty()){
                 msg = getString(R.string.requiredError);
@@ -124,6 +113,28 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
             lastName_SignUp.requestFocus();
             rc = false;
         }
+
+
+        else if (yearOfBirth.length() != 4) {
+            yearOfBirth_SignUp.setError(getString(R.string.short_tearOfBirth));
+            yearOfBirth_SignUp.requestFocus();
+            rc = false;
+        }
+
+        else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            email_SignUp.setError(getString(R.string.email_required));
+            email_SignUp.requestFocus();
+            rc = false;
+        }
+
+
+
+        else if (password.length() < 6) {
+            password_SignUp.setError(getString(R.string.short_password));
+            password_SignUp.requestFocus();
+            rc = false;
+        }
+
         return rc;
     }
 
