@@ -1,7 +1,5 @@
 package Database;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -20,29 +18,21 @@ import Register.OnEmailCheckListener;
 
 import static java.lang.String.valueOf;
 
-public class Server {
+public class Server{
 
-    private RegularUser user;
-    private String pass;
+
     private FirebaseAuth mAuth;
     private DatabaseReference db;
 
-    public Server(RegularUser user, String pass) {
-        this.user = user;
-        this.pass = pass;
-        //Firebase
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance().getReference();
-    }
 
     public Server(){
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance().getReference();
     }
 
-    public void registerNewUser(){
+    public void registerNewUser(final RegularUser user, String pass){
 
-        mAuth.createUserWithEmailAndPassword(user.getEmail(), this.pass)
+        mAuth.createUserWithEmailAndPassword(user.getEmail(), pass)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -78,11 +68,8 @@ public class Server {
 
 
 
-    public void completeRegister(){
-        user.setAllergies(user.getAllergies());
-        user.setDislikes(user.getDislikes());
-        user.setTop5FavMeal(user.getTop5FavMeal());
-        user.setTop10FavIngredients(user.getTop10FavIngredients());
+    public void completeRegister(final RegularUser user){
+
 
         db.child("Allergies").child(user.getEmail().replace(".", "|"))
                 .setValue(user.getAllergies());
@@ -95,31 +82,5 @@ public class Server {
 
         db.child("top5Meal").child(user.getEmail().replace(".", "|"))
                 .setValue(user.getTop5FavMeal());
-    }
-
-
-    public Server(Parcel in){
-        readFromParcel(in);
-    }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Server createFromParcel(Parcel in) {
-            return new Server(in);
-        }
-
-        @Override
-        public RegularUser[] newArray(int size) {
-            return new RegularUser[size];
-
-        }
-    };
-
-
-    private void readFromParcel(Parcel in) {
-        this.user = user;
-    }
-
-    public RegularUser getUser() {
-        return user;
     }
 }

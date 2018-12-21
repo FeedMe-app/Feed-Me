@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RegularUser implements user, Parcelable {
+public class RegularUser extends ClassLoader implements user, Parcelable {
 
     private String firstName, lastName, email;
     private String yearOfBirth;
@@ -123,9 +123,13 @@ public class RegularUser implements user, Parcelable {
 
     }
 
+
+
     public RegularUser(Parcel in){
         readFromParcel(in);
     }
+
+
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public RegularUser createFromParcel(Parcel in ) {
@@ -137,10 +141,14 @@ public class RegularUser implements user, Parcelable {
         }
     };
 
+
+
     @Override
     public int describeContents() {
         return 0;
     }
+
+
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

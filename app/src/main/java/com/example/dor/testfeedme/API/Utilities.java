@@ -158,9 +158,9 @@ public class Utilities {
         }
         return listOfKeyValuePair;
     }
-    public static List<Recipe> getRecipes()
+    public static List<String> getRecipes()
     {
-        List<Recipe> listOfRecipes = new ArrayList<>();
+        List<String> listOfRecipes = new ArrayList<>();
         InputStream in = context.getResources().openRawResource(R.raw.recipe_data);
         JSONObject jsonObj;
         JSONParser jsonParser = new JSONParser();
@@ -169,7 +169,7 @@ public class Utilities {
             for(Iterator iterator = jsonObj.keySet().iterator(); iterator.hasNext();)
             {
                 String key = (String) iterator.next();
-                listOfRecipes.add(loadRecipe(key));
+                listOfRecipes.add(key);
             }
         } catch (IOException e) {
             e.printStackTrace();
