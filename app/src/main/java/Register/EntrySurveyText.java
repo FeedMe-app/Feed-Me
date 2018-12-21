@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme;
+package Register;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,10 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dor.testfeedme.API.Utilities;
+import com.example.dor.testfeedme.MainActivity;
 import com.example.dor.testfeedme.Models.DownloadImageTask;
 import com.example.dor.testfeedme.Models.Ingredient;
 import com.example.dor.testfeedme.Models.Recipe;
-import com.example.dor.testfeedme.Users.RegularUser;
+import com.example.dor.testfeedme.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +34,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import Database.Server;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 
@@ -46,9 +49,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private DownloadImageTask imageViewHandler;
     private int currRecipeIndex = 0;
     private final int MAXIMUM_CHOSEN_RECIPES = 10;
-    private RegularUser newUser;
-    private String newUserPassword;
-
+    //private RegularUser newUser;
+    private Server server;
 
     private Button addAllergyBtn;
     private Button addDislikeBtn;
@@ -76,21 +78,55 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         dislikes = new ArrayList<>();
 
         Bundle data = getIntent().getExtras();
-        newUser = data.getParcelable("newUser");
-        newUserPassword = data.getString("userPassword");
+        //newUser = data.getParcelable("newUser");
+        server = data.getParcelable("serverConnection");
 
 
     }
 
 
-        public void registerUser() {
-        /////Add user to Database/////
 
-            Toast.makeText(EntrySurveyText.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
-            Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
-            startActivity(login);
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.addAllergyBtn:
+                AddAllergy();
+                ((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).setText("");
+                break;
 
+            case R.id.addDisklikeBtn:
+                addDislike();
+                ((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).setText("");
+                break;
+
+            case R.id.nextBtn:
+                goToImageSurvey();
+                break;
+
+            case R.id.yesBtn:
+                HandleLikedRecipe();
+                break;
+
+            case R.id.noBtn:
+                generateNewRecipe();
+                break;
+
+            case R.id.continueBtn:
+                CompleteRegistration();
+                break;
+        }
     }
+
+
+    private void CompleteRegistration() {
+
+        Toast.makeText(EntrySurveyText.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
+        Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
+        startActivity(login);
+    }
+
+
 
     private List<String> GetTop10Ingreds() {
         List<String> rc = new ArrayList<>();
@@ -119,6 +155,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         return rc;
     }
 
+
+
     private HashMap<Ingredient, Integer> sortMap(HashMap<Ingredient, Integer> map) {
         List<Map.Entry<Ingredient, Integer>> capitalList = new LinkedList<>(map.entrySet());
 
@@ -140,6 +178,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         return result;
     }
 
+
+
     private List<String> GetTop5Recipes() {
         List<String> rc = new ArrayList<>();
         for (int i = 0; i < 5; i++){
@@ -147,6 +187,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         }
         return rc;
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeListeners(){
@@ -166,11 +208,15 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         InitializeRadioGroupsListeners();
     }
 
+
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeRadioGroupsListeners() {
         InitializeKosherRadioGroup();
         InitializeVeganRadioGroup();
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeVeganRadioGroup() {
@@ -188,6 +234,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeKosherRadioGroup() {
         KosherRadioGroup = findViewById(R.id.KosherRadioGroup);
@@ -203,6 +251,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             }
         });
     }
+
+
 
     private void InitializeTextViewListener(int tvId, final int btnId){
 
@@ -230,6 +280,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
 
+
     private void InitializeTextViewListeners() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
                 this.Ingredients);
@@ -242,45 +293,20 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.addAllergyBtn:
-                AddAllergy();
-                ((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).setText("");
-                break;
-            case R.id.addDisklikeBtn:
-                addDislike();
-                ((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).setText("");
-                break;
-            case R.id.nextBtn:
-                goToImageSurvey();
-                break;
-            case R.id.yesBtn:
-                HandleLikedRecipe();
-                break;
-            case R.id.noBtn:
-                generateNewRecipe();
-                break;
-            case R.id.continueBtn:
-                CompleteRegistration();
-                break;
-        }
-    }
+
 
     private void addDislike() {
         dislikes.add(((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).getText().toString());
     }
+
+
 
     private void HandleLikedRecipe() {
         chosenRecipes.add(recipes.get(currRecipeIndex));
         generateNewRecipe();
     }
 
-    private void CompleteRegistration() {
-        registerUser();
-    }
+
 
     private void generateNewRecipe() {
         currRecipeIndex++;
@@ -302,23 +328,33 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         continueBtn.setOnClickListener(this);
     }
 
+
+
     private void AddAllergy() {
         allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
     }
+
+
 
     private void GetAllIngredients(){
         setUtilitesContext();
         this.Ingredients = Utilities.getIngredients();
     }
 
+
+
     private void setUtilitesContext(){
         Utilities.setContext(this);
     }
+
+
 
     private void getAllRecipes(){
         setUtilitesContext();
         this.recipes = Utilities.getRecipes();
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void goToImageSurvey(){

@@ -1,13 +1,15 @@
-package com.example.dor.testfeedme;
+package Register;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.dor.testfeedme.R;
 import com.example.dor.testfeedme.Users.RegularUser;
 
 import Database.Server;
@@ -74,7 +76,7 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
         server.registerNewUser();
         //Full register
         entrySurveyActivity.putExtra("newUser", user);
-        //entrySurveyActivity.putExtra("userPassword", password_SignUp.getText().toString());
+        entrySurveyActivity.putExtra("serverConnection", (Parcelable) server);
         startActivity(entrySurveyActivity);
     }
 

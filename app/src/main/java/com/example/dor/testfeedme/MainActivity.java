@@ -12,12 +12,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dor.testfeedme.API.Utilities;
-import com.example.dor.testfeedme.Users.RegularUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
+import Register.ResetPassword;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         switch (view.getId()) {
 
             case R.id.main_signUp:
-                Intent signUpActivity = new Intent(MainActivity.this, signUp.class);
+                Intent signUpActivity = new Intent(MainActivity.this, Register.signUp.class);
                 startActivity(signUpActivity);
                 break;
 
