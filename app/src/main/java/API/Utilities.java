@@ -1,20 +1,14 @@
-package com.example.dor.testfeedme.API;
+package API;
 
-import android.app.AppComponentFactory;
 import android.content.Context;
-import android.renderscript.ScriptGroup;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
 
-import com.example.dor.testfeedme.Models.Ingredient;
-import com.example.dor.testfeedme.Models.IngredientLine;
-import com.example.dor.testfeedme.Models.Instructions;
-import com.example.dor.testfeedme.Models.Label;
-import com.example.dor.testfeedme.Models.Recipe;
+import Models.Ingredient;
+import Models.IngredientLine;
+import Models.Instructions;
+import Models.Label;
+import Models.Recipe;
 import com.example.dor.testfeedme.R;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme.API;
+package API;
 
 import org.junit.Test;
 

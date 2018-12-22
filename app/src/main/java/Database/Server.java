@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.dor.testfeedme.R;
-import com.example.dor.testfeedme.Users.RegularUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -15,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import Register.OnEmailCheckListener;
+import Users.RegularUser;
 
 import static java.lang.String.valueOf;
 
@@ -37,7 +37,8 @@ public class Server{
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            db.child("Users").child(user.getEmail().replace(".", "|")).setValue(user);
+                            db.child("Users").child(user.getEmail().replace(".", "|")).child("Details")
+                                    .setValue(user);
                         }//End-if isSuccessful
 
                         else {
@@ -71,16 +72,16 @@ public class Server{
     public void completeRegister(final RegularUser user){
 
 
-        db.child("Allergies").child(user.getEmail().replace(".", "|"))
+        db.child("Users").child(user.getEmail().replace(".", "|")).child("Allergies")
                 .setValue(user.getAllergies());
 
-        db.child("Dislikes").child(user.getEmail().replace(".", "|"))
+        db.child("Users").child(user.getEmail().replace(".", "|")).child("Dislikes")
                 .setValue(user.getDislikes());
 
-        db.child("Top10Ingredients").child(user.getEmail().replace(".", "|"))
+        db.child("Users").child(user.getEmail().replace(".", "|")).child("Top10Ingredients")
                 .setValue(user.getTop10FavIngredients());
 
-        db.child("top5Meal").child(user.getEmail().replace(".", "|"))
+        db.child("Users").child(user.getEmail().replace(".", "|")).child("top5Meal")
                 .setValue(user.getTop5FavMeal());
     }
 }

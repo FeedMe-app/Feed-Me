@@ -1,8 +1,4 @@
-package com.example.dor.testfeedme.Models;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+package Models;
 
 public class Label
 {

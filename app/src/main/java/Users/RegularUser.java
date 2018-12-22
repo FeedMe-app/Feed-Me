@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme.Users;
+package Users;
 
 import android.os.Parcel;
 import android.os.Parcelable;
