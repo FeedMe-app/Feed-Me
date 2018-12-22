@@ -16,9 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".signUp" />
-	<activity android:name=".EntrySurveyText"></activity>
-	<activity android:name=".ResetPassword"></activity>
+        <activity android:name="Register.signUp" />
+	<activity android:name="Register.EntrySurveyText"></activity>
+	<activity android:name="Register.ResetPassword"></activity>
 	
     </application>
 

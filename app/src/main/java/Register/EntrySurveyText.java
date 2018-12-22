@@ -1,52 +1,43 @@
-package com.example.dor.testfeedme;
+package Register;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.example.dor.testfeedme.API.Utilities;
+import com.example.dor.testfeedme.MainActivity;
 import com.example.dor.testfeedme.Models.DownloadImageTask;
 import com.example.dor.testfeedme.Models.Ingredient;
-import com.example.dor.testfeedme.Models.IngredientLine;
 import com.example.dor.testfeedme.Models.Recipe;
+import com.example.dor.testfeedme.R;
 import com.example.dor.testfeedme.Users.RegularUser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
+
+import Database.Server;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 
@@ -62,11 +53,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private int currRecipeIndex = 0;
     private final int MAXIMUM_CHOSEN_RECIPES = 10;
     private RegularUser newUser;
-    private String newUserPassword;
-    private FirebaseAuth mAuth;
-    private DatabaseReference db;
-
-
+    private Server sv = new Server();
     private Button addAllergyBtn;
     private Button addDislikeBtn;
     private Button nextBtn;
@@ -94,60 +81,57 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         getAllRecipes();
         loadTenRecipes();
         Bundle data = getIntent().getExtras();
-        newUser = data.getParcelable("newUser");
-        newUserPassword = data.getString("userPassword");
+        newUser= data.getParcelable("newUser");
 
-        //Firebase
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance().getReference();
+
     }
 
-    public void registerUser() {
-        /////Add user to Database/////
-        mAuth.createUserWithEmailAndPassword(newUser.getEmail(), newUserPassword)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            db.child("Users").child(newUser.getEmail().replace(".", "|")).setValue(newUser);
 
-                            newUser.setAllergies(allergies);
-                            newUser.setDislikes(dislikes);
-                            newUser.setTop5FavMeal(GetTop5Recipes());
-                            newUser.setTop10FavIngredients(GetTop10Ingreds());
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.addAllergyBtn:
+                AddAllergy();
+                ((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).setText("");
+                break;
 
-                            db.child("Allergies").child(newUser.getEmail().replace(".", "|"))
-                                    .setValue(newUser.getAllergies());
+            case R.id.addDisklikeBtn:
+                addDislike();
+                ((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).setText("");
+                break;
 
-                            db.child("Dislikes").child(newUser.getEmail().replace(".", "|"))
-                                    .setValue(newUser.getDislikes());
+            case R.id.nextBtn:
+                goToImageSurvey();
+                break;
 
-                            db.child("Top10Ingredients").child(newUser.getEmail().replace(".", "|"))
-                                    .setValue(newUser.getTop10FavIngredients());
+            case R.id.yesBtn:
+                HandleLikedRecipe();
+                break;
 
-                            db.child("top5Meal").child(newUser.getEmail().replace(".", "|"))
-                                    .setValue(newUser.getTop5FavMeal());
+            case R.id.noBtn:
+                generateNewRecipe();
+                break;
 
-
-                            Toast.makeText(EntrySurveyText.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
-                            Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
-                            startActivity(login);
-                        }//End-if isSuccessful
-
-                        else {
-                            try {
-                                throw task.getException();
-                            } catch (FirebaseAuthUserCollisionException existEmail) {
-                                Log.d(newUser.getEmail(), getString(R.string.email_exist));
-                                Toast.makeText(EntrySurveyText.this, getString(R.string.email_exist), Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                Log.d(newUser.getEmail(), getString(R.string.email_exist) + e.getMessage());
-
-                            }
-                        } //End else
-                    }
-                });
+            case R.id.continueBtn:
+                CompleteRegistration();
+                break;
+        }
     }
+
+
+    private void CompleteRegistration() {
+        newUser.setAllergies(allergies);
+        newUser.setDislikes(dislikes);
+        newUser.setTop5FavMeal(GetTop5Recipes());
+        newUser.setTop10FavIngredients(GetTop10Ingreds());
+        sv.completeRegister(newUser);
+        Toast.makeText(EntrySurveyText.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
+        Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
+        startActivity(login);
+    }
+
+
 
     private List<String> GetTop10Ingreds() {
         List<String> rc = new ArrayList<>();
@@ -176,6 +160,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         return rc;
     }
 
+
+
     private HashMap<Ingredient, Integer> sortMap(HashMap<Ingredient, Integer> map) {
         List<Map.Entry<Ingredient, Integer>> capitalList = new LinkedList<>(map.entrySet());
 
@@ -197,6 +183,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         return result;
     }
 
+
+
     private List<String> GetTop5Recipes() {
         List<String> rc = new ArrayList<>();
         for (int i = 0; i < 5; i++){
@@ -204,6 +192,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         }
         return rc;
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeListeners(){
@@ -223,11 +213,15 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         InitializeRadioGroupsListeners();
     }
 
+
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeRadioGroupsListeners() {
         InitializeKosherRadioGroup();
         InitializeVeganRadioGroup();
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeVeganRadioGroup() {
@@ -245,6 +239,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeKosherRadioGroup() {
         KosherRadioGroup = findViewById(R.id.KosherRadioGroup);
@@ -260,6 +256,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             }
         });
     }
+
+
 
     private void InitializeTextViewListener(int tvId, final int btnId){
 
@@ -287,6 +285,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
 
+
     private void InitializeTextViewListeners() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
                 this.Ingredients);
@@ -299,45 +298,20 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.addAllergyBtn:
-                AddAllergy();
-                ((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).setText("");
-                break;
-            case R.id.addDisklikeBtn:
-                addDislike();
-                ((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).setText("");
-                break;
-            case R.id.nextBtn:
-                goToImageSurvey();
-                break;
-            case R.id.yesBtn:
-                HandleLikedRecipe();
-                break;
-            case R.id.noBtn:
-                generateNewRecipe();
-                break;
-            case R.id.continueBtn:
-                CompleteRegistration();
-                break;
-        }
-    }
+
 
     private void addDislike() {
         dislikes.add(((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).getText().toString());
     }
+
+
 
     private void HandleLikedRecipe() {
         chosenRecipes.add(chunckOfTenRecipes.get(currRecipeIndex));
         generateNewRecipe();
     }
 
-    private void CompleteRegistration() {
-        registerUser();
-    }
+
 
     private void generateNewRecipe() {
         if (chosenRecipes.size() < MAXIMUM_CHOSEN_RECIPES){
@@ -368,18 +342,26 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         continueBtn.setOnClickListener(this);
     }
 
+
+
     private void AddAllergy() {
         allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
     }
+
+
 
     private void GetAllIngredients(){
         setUtilitesContext();
         this.Ingredients = Utilities.getIngredients();
     }
 
+
+
     private void setUtilitesContext(){
         Utilities.setContext(this);
     }
+
+
 
     private void getAllRecipes(){
         setUtilitesContext();
@@ -411,7 +393,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             currRecipeIndex = 1;
         }
         try {
-           // Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
+            // Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
             Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
