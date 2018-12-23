@@ -6,16 +6,19 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RegularUser extends ClassLoader implements user, Parcelable {
+import Register.signUp;
+
+public class RegularUser implements user, Parcelable {
 
     private String firstName, lastName, email;
     private String yearOfBirth;
+    private String userClassification;
+    private  boolean isKosher;
     private List<String> allergies;
     private List<String> dislikes;
     private List<String> top5FavMeal;
     private List<String> top10FavIngredients;
-    private List<String> userClassification;
-    private static int userID=0;
+    private int userID;
 
 
     ////////////////Constructor////////////
@@ -25,20 +28,18 @@ public class RegularUser extends ClassLoader implements user, Parcelable {
         this.lastName = lastName;
         this.email = email;
         this.yearOfBirth = yearOfBirth;
+        userClassification = "Regular";
+        isKosher = true;
         allergies = new ArrayList<>();
         dislikes = new ArrayList<>();
         top5FavMeal = new ArrayList<>();
         top10FavIngredients = new ArrayList<>();
-        userClassification = new ArrayList<>();
-        userID++;
+        this.userID = signUp.userID++;
     }
 
 
 
-    public RegularUser() {
-
-    }
-
+    public RegularUser() {}
 
 
     public int getUserID() {
@@ -53,26 +54,13 @@ public class RegularUser extends ClassLoader implements user, Parcelable {
 
 
 
-    public String getLastName() {
-        return lastName;
-    }
-
-
-
-    public String getEmail() {
-        return email;
-    }
-
-
-
-    public String getYearOfBirth() {
-        return yearOfBirth;
-    }
-
-
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+
+    public String getLastName() {
+        return lastName;
     }
 
 
@@ -83,8 +71,20 @@ public class RegularUser extends ClassLoader implements user, Parcelable {
 
 
 
+    public String getEmail() {
+        return email;
+    }
+
+
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+
+
+    public String getYearOfBirth() {
+        return yearOfBirth;
     }
 
 
@@ -131,13 +131,13 @@ public class RegularUser extends ClassLoader implements user, Parcelable {
 
 
 
-    public List<String> getUserClassification() {
+    public String getUserClassification() {
         return userClassification;
     }
 
 
 
-    public void setUserClassification(List<String> userClassification) {
+    public void setUserClassification(String userClassification) {
         this.userClassification = userClassification;
     }
 

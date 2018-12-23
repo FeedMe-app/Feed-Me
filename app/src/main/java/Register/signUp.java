@@ -19,7 +19,8 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
     private Button signUpButton;
     private boolean isExists = false;
     private Server sv = new Server();
-    ;
+    public static int userID=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

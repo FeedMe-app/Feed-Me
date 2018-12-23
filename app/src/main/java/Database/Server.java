@@ -35,7 +35,7 @@ public class Server{
         mAuth.createUserWithEmailAndPassword(user.getEmail(), pass)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             db.child("Users").child(user.getEmail().replace(".", "|")).child("Details")
                                     .setValue(user);

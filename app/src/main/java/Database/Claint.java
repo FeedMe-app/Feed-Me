@@ -1,6 +1,5 @@
 package Database;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -12,30 +11,36 @@ import Users.RegularUser;
 public class Claint {
 
 
-    private FirebaseAuth mAuth;
     private DatabaseReference db;
     private RegularUser user;
+    private String email;
 
-    public Claint(){
-        mAuth = FirebaseAuth.getInstance();
+    public Claint(String email){
         db = FirebaseDatabase.getInstance().getReference();
+        this.user = new RegularUser();
+        this.email = email;
     }
 
 
 
-    public RegularUser getUserFromDatabase(String email){
-        user = new RegularUser();
+    public RegularUser getUserFromDatabase(final GetDataFromFirebase myCallback){
 
-        db.child("Users").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                user = (RegularUser) snapshot.getValue();
+        db.child("Users").child(email.replace(".", "|")).child("Details")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            user = dataSnapshot.getValue(RegularUser.class);
+                            myCallback.onCallback(user);
+                        }
+                    }
 
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
 
         return user;
     }
