@@ -19,13 +19,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dor.testfeedme.API.Utilities;
-import com.example.dor.testfeedme.MainActivity;
-import com.example.dor.testfeedme.Models.DownloadImageTask;
-import com.example.dor.testfeedme.Models.Ingredient;
-import com.example.dor.testfeedme.Models.Recipe;
 import com.example.dor.testfeedme.R;
-import com.example.dor.testfeedme.Users.RegularUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +31,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import API.Utilities;
 import Database.Server;
+import MainActivity.MainActivity;
+import Models.DownloadImageTask;
+import Models.Ingredient;
+import Models.Recipe;
+import Users.RegularUser;
 
 public class EntrySurveyText extends AppCompatActivity implements View.OnClickListener {
 

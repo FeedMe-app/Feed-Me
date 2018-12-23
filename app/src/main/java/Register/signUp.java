@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.dor.testfeedme.R;
-import com.example.dor.testfeedme.Users.RegularUser;
+import Users.RegularUser;
 
 import Database.Server;
 

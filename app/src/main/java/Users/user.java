@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme.Users;
+package Users;
 
 public interface user {
 

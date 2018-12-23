@@ -1,8 +1,7 @@
-package com.example.dor.testfeedme.Models;
+package Models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Recipe
 {
