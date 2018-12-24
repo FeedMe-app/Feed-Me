@@ -1,6 +1,7 @@
 package MainActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import java.util.List;
 import API.Utilities;
 import Database.Client;
 import Database.GetRecipeFromDatabase;
+import Models.DBPullService;
 import Models.Recipe;
 import Register.ResetPassword;
 
@@ -41,41 +43,31 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Utilities.ApplicationLoaded = true;
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        auth = FirebaseAuth.getInstance();
+        if (!Utilities.ApplicationLoaded) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            Intent intent = new Intent(this, DBPullService.class);
+            startService(intent);
+        }
+            Utilities.ApplicationLoaded = true;
+            auth = FirebaseAuth.getInstance();
 
-        //////////////// Sign Up ////////////////
+            //////////////// Sign Up ////////////////
 
-        signUp = findViewById(R.id.main_signUp);
-        signUp.setOnClickListener(this);
+            signUp = findViewById(R.id.main_signUp);
+            signUp.setOnClickListener(this);
 
-        Button signInAsGuestBtn = findViewById(R.id.main_guest);
-        signInAsGuestBtn.setOnClickListener(this);
+            Button signInAsGuestBtn = findViewById(R.id.main_guest);
+            signInAsGuestBtn.setOnClickListener(this);
 
-        signIn = findViewById(R.id.main_signIn);
-        emailMain = findViewById(R.id.main_email);
-        passwordMain = findViewById(R.id.main_password);
-        signIn.setOnClickListener(this);
-        forgotPasswordMain = findViewById(R.id.main_ForgotPassword);
-        forgotPasswordMain.setOnClickListener(this);
+            signIn = findViewById(R.id.main_signIn);
+            emailMain = findViewById(R.id.main_email);
+            passwordMain = findViewById(R.id.main_password);
+            signIn.setOnClickListener(this);
+            forgotPasswordMain = findViewById(R.id.main_ForgotPassword);
+            forgotPasswordMain.setOnClickListener(this);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Client client = new Client();
-                client.getAllRecipes(new GetRecipeFromDatabase() {
-                    @Override
-                    public void onCallbackRecipe(List<Recipe> recipes) {
-                        Utilities.recipes = recipes;
-                    }
-                });
-            }
-        }).start();
-        //enterAsGuest = findViewById(R.id.main_guest);
-
-
-            }
+            //enterAsGuest = findViewById(R.id.main_guest);
+        }
 
 
     public void onClick(View view){

@@ -1,6 +1,7 @@
 
 package Database;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import API.Utilities;
 import Models.Ingredient;
 import Models.IngredientLine;
 import Models.Instructions;
@@ -28,6 +31,8 @@ public class Client {
     private String email;
     private List<String> topIngreds = new ArrayList<>();
     private List<String> topMeals = new ArrayList<>();
+    private List<String> allergies = new ArrayList<>();
+    private List<String> dislikes = new ArrayList<>();
     private Recipe recipe;
     private String recipeName;
     private List<Recipe> recipes = new ArrayList<>();
@@ -64,7 +69,50 @@ public class Client {
     public void getUserExtraDetails(String email, final GetExtraUserData callBack){
 	    getTop10Ingredients(email);
 	    getTop5Meals(email);
-	    callBack.onCallback(topIngreds, topMeals);
+	    // add allergies and dislikes
+        getDislikes(email);
+        getAllergies(email);
+	    callBack.onCallback(topIngreds, topMeals, allergies, dislikes);
+    }
+
+    private void getAllergies(String email) {
+        db.child("Users").child(email.replace(".", "|")).child("Allergies")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Iterable<DataSnapshot> allergiesIter = dataSnapshot.getChildren();
+                            for (DataSnapshot dss : allergiesIter){
+                                allergies.add(dss.getValue().toString());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void getDislikes(String email) {
+        db.child("Users").child(email.replace(".", "|")).child("Dislikes")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Iterable<DataSnapshot> dislikesIter = dataSnapshot.getChildren();
+                            for (DataSnapshot dss : dislikesIter){
+                                dislikes.add(dss.getValue().toString());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void getTop10Ingredients(String email) {
@@ -90,40 +138,46 @@ public class Client {
 
 
     public void getAllRecipes(final GetRecipeFromDatabase callback){
-        db.child("Recipes").addValueEventListener(new ValueEventListener() {
+        AsyncTask.execute(new Runnable() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    for (DataSnapshot dss : dataSnapshot.getChildren()){
-                        String name = String.valueOf(dss.child("name").getValue());
-                        String img = String.valueOf(dss.child("imgUrl").getValue());
-                        List<Label> labels = new ArrayList<>();
-                        List<Ingredient> ingredients = new ArrayList<>();
-                        List<IngredientLine> ingredientLines = new ArrayList<>();
-                        List<Instructions> instructions = new ArrayList<>();
-                        for (DataSnapshot labelDss : dss.child("labels").getChildren()){
-                            labels.add(labelDss.getValue(Label.class));
+            public void run() {
+                db.child("Recipes").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            for (DataSnapshot dss : dataSnapshot.getChildren()){
+                                String name = String.valueOf(dss.child("name").getValue());
+                                String img = String.valueOf(dss.child("imgUrl").getValue());
+                                List<Label> labels = new ArrayList<>();
+                                List<Ingredient> ingredients = new ArrayList<>();
+                                List<IngredientLine> ingredientLines = new ArrayList<>();
+                                List<Instructions> instructions = new ArrayList<>();
+                                for (DataSnapshot labelDss : dss.child("labels").getChildren()){
+                                    labels.add(labelDss.getValue(Label.class));
+                                }
+                                for (DataSnapshot ingredDss : dss.child("ingredients").getChildren()){
+                                    ingredients.add(ingredDss.getValue(Ingredient.class));
+                                }
+                                for (DataSnapshot ingredLineDss : dss.child("ingredientLine").getChildren()){
+                                    ingredientLines.add(ingredLineDss.getValue(IngredientLine.class));
+                                }
+                                for (DataSnapshot instrucDss : dss.child("instructions").getChildren()){
+                                    instructions.add(instrucDss.getValue(Instructions.class));
+                                }
+                                recipes.add(new Recipe(name, img, ingredients, labels, instructions, ingredientLines));
+                            }
+                            callback.onCallbackRecipe(recipes);
                         }
-                        for (DataSnapshot ingredDss : dss.child("ingredients").getChildren()){
-                            ingredients.add(ingredDss.getValue(Ingredient.class));
-                        }
-                        for (DataSnapshot ingredLineDss : dss.child("ingredientLine").getChildren()){
-                            ingredientLines.add(ingredLineDss.getValue(IngredientLine.class));
-                        }
-                        for (DataSnapshot instrucDss : dss.child("instructions").getChildren()){
-                            instructions.add(instrucDss.getValue(Instructions.class));
-                        }
-                        recipes.add(new Recipe(name, img, ingredients, labels, instructions, ingredientLines));
                     }
-                    callback.onCallbackRecipe(recipes);
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                    }
+                });
             }
         });
+
     }
 
 

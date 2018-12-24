@@ -18,6 +18,7 @@
     <string name="reset_password_msg2">Failed to send reset email!</string>
     <string name="register_mail">Enter your registered email</string>
     <string name="EntrySurveyTestTitle">Entry Survey</string>
+    <string name="ChooseRecipeTitle">Choose Recipe</string>
     <string name="Allergies">Allergies</string>
     <string name="KosherLabel">Kosher</string>
     <string name="NotKosherLabel">Not Kosher</string>

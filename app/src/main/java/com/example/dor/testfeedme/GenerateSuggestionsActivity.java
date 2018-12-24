@@ -45,9 +45,11 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private GetExtraUserData HandleExtraDataRecevied(){
         return new GetExtraUserData() {
             @Override
-            public void onCallback(List<String> topIngreds, List<String> topMeals) {
+            public void onCallback(List<String> topIngreds, List<String> topMeals, List<String> allergies, List<String> dislikes) {
                 user.setTop10FavIngredients(topIngreds);
                 user.setTop5FavMeal(topMeals);
+                user.setAllergies(allergies);
+                user.setDislikes(dislikes);
                 StartRecipesSuggestions();
             }
         };
