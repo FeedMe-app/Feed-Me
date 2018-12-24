@@ -4,20 +4,18 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.Random;
@@ -40,7 +38,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle aToggle;
     String userEmail;
-    RegularUser user;
+    RegularUser userDetails;
     Client client;
     NavigationView navigationView;
     private Button feedMeBtn;
@@ -57,6 +55,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_suggestions);
 
+        userDetails = new RegularUser();
         InitializeSideBarMenu();
         GetUserExtraDetails();
         InitializeButtonListener();
@@ -70,15 +69,14 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private void GetUserExtraDetails() {
         client.getUserExtraDetails(userEmail, HandleExtraDataRecevied());
     }
-
     private GetExtraUserData HandleExtraDataRecevied(){
         return new GetExtraUserData() {
             @Override
             public void onCallback(List<String> topIngreds, List<String> topMeals, List<String> allergies, List<String> dislikes) {
-                user.setTop10FavIngredients(topIngreds);
-                user.setTop5FavMeal(topMeals);
-                user.setAllergies(allergies);
-                user.setDislikes(dislikes);
+                userDetails.setTop10FavIngredients(topIngreds);
+                userDetails.setTop5FavMeal(topMeals);
+                userDetails.setAllergies(allergies);
+                userDetails.setDislikes(dislikes);
             }
         };
     }
@@ -90,7 +88,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         aToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        user = new RegularUser();
 
         Bundle data = getIntent().getExtras();
         userEmail= data.getString("userEmail");
@@ -112,32 +109,32 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
     private void addFullNameToHeaderMenu(){
 
-        user = client.getUserFromDatabase(userEmail, new GetDataFromFirebase() {
+         client.getUserFromDatabase(userEmail, new GetDataFromFirebase() {
             NavigationView navigationView = findViewById(R.id.menuLayout);
             View headerView = navigationView.inflateHeaderView(R.layout.header_menu);
             @Override
             public void onCallback(RegularUser user) {
+                userDetails = user;
                 TextView emailMenu = headerView.findViewById(R.id.email_menu);
-                emailMenu.setText(user.getEmail());
+                emailMenu.setText(userDetails.getEmail());
 
                 TextView fullnameMenu = headerView.findViewById(R.id.name_menu);
-                fullnameMenu.setText(user.getFirstName() + " " + user.getLastName());
+                fullnameMenu.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
 
                 TextView classifictionMenu = headerView.findViewById(R.id.classifiction_menu);
-                classifictionMenu.setText(user.getUserClassification());
+                classifictionMenu.setText(userDetails.getUserClassification());
             }
         });
 
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
 
         menuItem.setChecked(true);
 
         switch (menuItem.getItemId()) {
             case R.id.profile:
-                Toast.makeText(GenerateSuggestionsActivity.this, "yesss", Toast.LENGTH_SHORT).show();
+                profileMenu();
                 break;
             case R.id.recipeHistory:
                 // do you click actions for the second selection
@@ -154,26 +151,33 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         }
 
         return false;
+
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    @Override
-    public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.feedMeBtn:
-                HandleUserChooseRecipe();
-                break;
-        }
-    }
+    private void profileMenu(){
+        setContentView(R.layout.profile_menu);
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+        TextView emailProfile = findViewById(R.id.email_profile);
+        emailProfile.setText(userDetails.getEmail());
+
+        TextView fullnameProfile = findViewById(R.id.name_profile);
+        fullnameProfile.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
+
+        TextView classifictionProfile = findViewById(R.id.classificrion_profile);
+        classifictionProfile.setText(userDetails.getUserClassification());
+
+        TextView yearOfBirthProfile = findViewById(R.id.yearOfBirth_profile);
+        yearOfBirthProfile.setText(userDetails.getYearOfBirth());
+    }
+	
+	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void HandleUserChooseRecipe() {
-        RecipeConfig config = new RecipeConfig(user.getTop10FavIngredients());
-        if (user.getAllergies().size() > 0){
-            config.setAllergies(user.getAllergies());
+        RecipeConfig config = new RecipeConfig(userDetails.getTop10FavIngredients());
+        if (userDetails.getAllergies().size() > 0){
+            config.setAllergies(userDetails.getAllergies());
         }
-        if (user.getDislikes().size() > 0){
-            config.setDislikes(user.getDislikes());
+        if (userDetails.getDislikes().size() > 0){
+            config.setDislikes(userDetails.getDislikes());
         }
         recipesToChooseFrom = Utilities.findRecpiesByUserPreferences(config);
         StartShowingRecipes();
@@ -214,6 +218,16 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
             currRecipeIndex = 0;
         }
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.feedMeBtn:
+                HandleUserChooseRecipe();
+                break;
+        }
     }
 
     private void HandleChooseBtn() {

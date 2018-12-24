@@ -11,7 +11,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +35,9 @@ public class Client {
     private Recipe recipe;
     private String recipeName;
     private List<Recipe> recipes = new ArrayList<>();
+    boolean ingreds, meals, alregs, dlikes;
+
+
     public Client(){
         db = FirebaseDatabase.getInstance().getReference();
         this.user = new RegularUser();
@@ -58,6 +60,7 @@ public class Client {
                                 topMeals.add(dss.getValue().toString());
                             }
                         }
+                        meals = true;
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -72,7 +75,14 @@ public class Client {
 	    // add allergies and dislikes
         getDislikes(email);
         getAllergies(email);
-	    callBack.onCallback(topIngreds, topMeals, allergies, dislikes);
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (!ingreds || !meals || !alregs || !dlikes) {}
+                callBack.onCallback(topIngreds, topMeals, allergies, dislikes);
+            }
+        });
+
     }
 
     private void getAllergies(String email) {
@@ -86,6 +96,7 @@ public class Client {
                                 allergies.add(dss.getValue().toString());
                             }
                         }
+                        alregs = true;
                     }
 
                     @Override
@@ -106,6 +117,7 @@ public class Client {
                                 dislikes.add(dss.getValue().toString());
                             }
                         }
+                        dlikes = true;
                     }
 
                     @Override
@@ -126,6 +138,7 @@ public class Client {
                                 topIngreds.add(dss.getValue().toString());
                             }
                         }
+                        ingreds = true;
                     }
 
                     @Override
@@ -181,7 +194,7 @@ public class Client {
     }
 
 
-    public RegularUser getUserFromDatabase(String email, final GetDataFromFirebase myCallback){
+    public void getUserFromDatabase(String email, final GetDataFromFirebase myCallback){
 
         db.child("Users").child(email.replace(".", "|")).child("Details")
                 .addValueEventListener(new ValueEventListener() {
@@ -199,8 +212,6 @@ public class Client {
                     }
                 });
 
-
-        return user;
-    }
+        }
 
 }

@@ -24,6 +24,8 @@
     <string name="RegularLabel">Regular</string>
     <string name="VegetarianLabel">Vegetarian</string>
     <string name="VeganLabel">Vegan</string>
+    <string name="email">Email:</string>
+    <string name="yearOfBirth">Year of birth:</string>
     <string name="nextBtnText">Next Stage</string>
     <string name="likeLabel">Like</string>
     <string name="passLabel">Pass</string>
