@@ -1,5 +1,6 @@
 package Register;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -86,10 +87,11 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     }
 
-
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onClick(View v) {
+
         switch (v.getId()){
             case R.id.addAllergyBtn:
                 AddAllergy();
@@ -119,7 +121,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-
     private void CompleteRegistration() {
         newUser.setAllergies(allergies);
         newUser.setDislikes(dislikes);
@@ -130,8 +131,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
         startActivity(login);
     }
-
-
 
     private List<String> GetTop10Ingreds() {
         List<String> rc = new ArrayList<>();
@@ -160,8 +159,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         return rc;
     }
 
-
-
     private HashMap<Ingredient, Integer> sortMap(HashMap<Ingredient, Integer> map) {
         List<Map.Entry<Ingredient, Integer>> capitalList = new LinkedList<>(map.entrySet());
 
@@ -183,8 +180,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         return result;
     }
 
-
-
     private List<String> GetTop5Recipes() {
         List<String> rc = new ArrayList<>();
         for (int i = 0; i < 5; i++){
@@ -192,8 +187,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         }
         return rc;
     }
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeListeners(){
@@ -213,15 +206,11 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         InitializeRadioGroupsListeners();
     }
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeRadioGroupsListeners() {
         InitializeKosherRadioGroup();
         InitializeVeganRadioGroup();
     }
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeVeganRadioGroup() {
@@ -239,8 +228,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void InitializeKosherRadioGroup() {
         KosherRadioGroup = findViewById(R.id.KosherRadioGroup);
@@ -256,8 +243,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
             }
         });
     }
-
-
 
     private void InitializeTextViewListener(int tvId, final int btnId){
 
@@ -284,8 +269,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-
-
     private void InitializeTextViewListeners() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
                 this.Ingredients);
@@ -298,32 +281,20 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     }
 
-
-
     private void addDislike() {
         dislikes.add(((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).getText().toString());
     }
 
-
-
     private void HandleLikedRecipe() {
-        chosenRecipes.add(chunckOfTenRecipes.get(currRecipeIndex));
+        chosenRecipes.add(Utilities.recipes.get(currRecipeIndex));
         generateNewRecipe();
     }
 
-
-
+    @SuppressLint("ClickableViewAccessibility")
     private void generateNewRecipe() {
         if (chosenRecipes.size() < MAXIMUM_CHOSEN_RECIPES){
             currRecipeIndex++;
-//            if (currRecipeIndex == chunckOfTenRecipes.size())
-//            {
-//
-//                loadTenRecipes();
-//                currRecipeIndex = 1;
-//
-//            }
-            Recipe currRec = chunckOfTenRecipes.get(currRecipeIndex);
+            Recipe currRec = Utilities.recipes.get(currRecipeIndex);
             imageViewHandler = new DownloadImageTask(im);
             try {
                 //Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
@@ -342,58 +313,39 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         continueBtn.setOnClickListener(this);
     }
 
-
-
     private void AddAllergy() {
         allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
     }
-
-
 
     private void GetAllIngredients(){
         setUtilitesContext();
         this.Ingredients = Utilities.getIngredients();
     }
 
-
-
     private void setUtilitesContext(){
         Utilities.setContext(this);
     }
 
-
-
-    private void getAllRecipes(){
-        setUtilitesContext();
-        this.recipes = Utilities.getRecipes();
-    }
-
-    private void loadTenRecipes() {
-        chunckOfTenRecipes = new ArrayList<>();
-        Random rand = new Random();
-        int randNum = rand.nextInt(recipes.size() - 10);
-        for (int i=0; i<10 ; i++)
-        {
-            //chunckOfTenRecipes.add(Utilities.loadRecipe(recipes.get(randNum)));
-            randNum += 1;
-        }
-
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void goToImageSurvey(){
-        currRecipeIndex++;
+        Random rand = new Random();
+        currRecipeIndex = rand.nextInt(Utilities.recipes.size() - 1);
         setContentView(R.layout.image_survey_layout);
         im = findViewById(R.id.imageView);
+        im.setOnTouchListener(new OnSwipeTouchListener(EntrySurveyText.this) {
+            public void onSwipeRight() {
+                HandleLikedRecipe();
+            }
+            public void onSwipeLeft() {
+                generateNewRecipe();
+            }
+        });
         imageViewHandler = new DownloadImageTask(im);
-        Recipe currRec = chunckOfTenRecipes.get(currRecipeIndex);
-//        if (currRecipeIndex == chunckOfTenRecipes.size())
-//        {
-//            loadTenRecipes();
-//            currRecipeIndex = 1;
-//        }
+
+        Recipe currRec = Utilities.recipes.get(currRecipeIndex);
+
         try {
-            // Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
             Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
         } catch (ExecutionException e) {
             e.printStackTrace();

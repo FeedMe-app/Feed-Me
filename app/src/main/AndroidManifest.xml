@@ -20,6 +20,8 @@
 	    <activity android:name="Register.EntrySurveyText"></activity>
         <activity android:name="Register.ResetPassword" />
         <activity android:name=".GenerateSuggestionsActivity"></activity>
+        
+        <service android:name="Models.DBPullService" android:exported="false"></service>
     </application>
 
 </manifest>

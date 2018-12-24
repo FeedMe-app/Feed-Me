@@ -2,6 +2,8 @@ package API;
 
 import android.content.Context;
 
+import Models.Ingredient;
+import Models.Label;
 import Models.Recipe;
 
 import com.example.dor.testfeedme.R;
@@ -24,12 +26,10 @@ public class Utilities {
     private static Context context;
     private static List<String> ingredients = new ArrayList<>();
     public static boolean ApplicationLoaded = false;
-    static Recipe recipeAns;
     public static List<Recipe> recipes;
     public static void setContext(Context _context){
         context = _context;
     }
-
 
     public static List<String> getIngredients()
     {
@@ -63,102 +63,7 @@ public class Utilities {
             ingredients.addAll(keys);
         }
     }
-//    public static Recipe loadRecipe(String name)
-//    {
-//        Recipe recipeObject = new Recipe();
-//        JSONObject recipe = findRecipe(name);
-//        if(recipe != null)
-//        {
-//            String headline = (String)recipe.get("headline");
-//            recipeObject.setName(headline);
-//
-//            String image = (String)recipe.get("image");
-//            recipeObject.setImgUrl(image);
-//
-//            if(recipe.get("labels") != null)
-//            {
-//                List<Map.Entry> labels = getJSONArray((JSONArray) recipe.get("labels"));
-//                Iterator<Map.Entry> itr = labels.iterator();
-//                while(itr.hasNext())
-//                {
-//                    Map.Entry<String, String> tmp = itr.next();
-//                    Label label = new Label(tmp.getKey(),tmp.getValue());
-//                    recipeObject.getLabels().add(label);
-//                }
-//            }
-//
-//
-//            List<Map.Entry> ing = getJSONArray((JSONArray) recipe.get("ingredients"));
-//            Iterator <Map.Entry> itrs = ing.iterator();
-//            while(itrs.hasNext())
-//            {
-//                Map.Entry<String, String> tmp = itrs.next();
-//                IngredientLine ingredient = new IngredientLine(tmp.getKey(),tmp.getValue());
-//                recipeObject.getIngredientLine().add(ingredient);
-//            }
-//
-//            List<Map.Entry> contains = getJSONArray((JSONArray) recipe.get("contains"));
-//            Iterator <Map.Entry> itrc = contains.iterator();
-//            while(itrc.hasNext())
-//            {
-//                Map.Entry<String, String> tmp = itrc.next();
-//                Ingredient product = new Ingredient(tmp.getKey());
-//                recipeObject.getIngredients().add(product);
-//            }
-//
-//            List<Map.Entry> instructions = getJSONArray((JSONArray) recipe.get("instructions"));
-//            Iterator <Map.Entry> itri = instructions.iterator();
-//            while(itri.hasNext())
-//            {
-//                Map.Entry<String, String> tmp = itri.next();
-//                Instructions instruction = new Instructions(tmp.getKey());
-//                recipeObject.getInstructions().add(instruction);
-//            }
-//
-//            return recipeObject;
-//        }
-//        else
-//        {
-//            return null;
-//        }
-//    }
-    public static JSONObject findRecipe(String name)
-    {
-        InputStream in = context.getResources().openRawResource(R.raw.recipe_data);
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonObj;
-        try
-        {
-            jsonObj = (JSONObject)jsonParser.parse(new InputStreamReader(in, "UTF-8"));
 
-            JSONObject recipe = (JSONObject)jsonObj.get(name);
-            return recipe;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    private static List<Map.Entry> getJSONArray (JSONArray arr)
-    {
-        List<Map.Entry> listOfKeyValuePair = new ArrayList<>();
-        Iterator itr = arr.iterator();
-        if(itr.hasNext())
-        {
-            itr.next();
-        }
-
-        while (itr.hasNext())
-        {
-            Object object = itr.next();
-            JSONObject jsonObject = (JSONObject) object;
-            Map.Entry<String, String> keyValue = new AbstractMap.SimpleEntry<String, String>(jsonObject.keySet().iterator().next().toString(),"");
-            keyValue.setValue(jsonObject.values().iterator().next().toString());
-            listOfKeyValuePair.add(keyValue);
-        }
-        return listOfKeyValuePair;
-    }
     public static List<String> getRecipes()
     {
         List<String> listOfRecipes = new ArrayList<>();
@@ -181,14 +86,104 @@ public class Utilities {
         return listOfRecipes;
     }
 
-//    public static Recipe loadRecipeByName(Client rec)
+    public static List<Recipe> findRecpiesByUserPreferences(RecipeConfig config)
+    {
+        List<Recipe> ans = new ArrayList<>();
+        for(Recipe recipe : recipes)
+        {
+            double matchRate = 0;
+
+            if (!config.allergies.isEmpty())
+            {
+                if (checkAllergies(recipe, config))
+                {
+                    continue;
+                }
+            }
+
+            matchRate = checkIngredients(recipe, config);
+
+            if(!config.dislikes.isEmpty())
+            {
+                matchRate -= checkDislikes(recipe, config);
+            }
+
+            if(matchRate >= 0.5)
+            {
+              ans.add(recipe);
+            }
+        }
+        return ans;
+    }
+
+    private static double checkIngredients(Recipe rec, RecipeConfig con)
+    {
+        double matchRate = 0;
+        for(Ingredient configIng : con.ingredients)
+        {
+            for(Ingredient ing : rec.getIngredients())
+            {
+                if(ing.getKey().equals(configIng.getKey()))
+                {
+                    matchRate++;
+                    continue;
+                }
+            }
+        }
+        matchRate /= con.ingredients.size();
+        return matchRate;
+    }
+
+    private static boolean checkAllergies(Recipe rec, RecipeConfig con)
+    {
+        if(!con.allergies.isEmpty())
+        {
+            for (String configAlle : con.allergies)
+            {
+                for (Ingredient ing : rec.getIngredients())
+                {
+                    if (configAlle.equals(ing.getKey()))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private  static double checkDislikes(Recipe rec, RecipeConfig con)
+    {
+        double matchRate = 0;
+        for(String dislikes : con.dislikes)
+        {
+            for(Ingredient ing : rec.getIngredients())
+            {
+                if(ing.getKey().equals(dislikes))
+                {
+                    matchRate++;
+                    continue;
+                }
+            }
+        }
+        matchRate /= con.dislikes.size();
+        return matchRate;
+    }
+//    private static boolean checklabels(Recipe rec, RecipeConfig con)
 //    {
-//        recipeAns = rec.getRecipeFromDatabase(new GetRecipeFromDatabase() {
-//            @Override
-//            public void onCallbackRecipe(Recipe recipe) {
-//                recipeAns = recipe;
+//        for(Label configLabel : con.labels)
+//        {
+//            for (Label label : rec.getLabels())
+//            {
+//                if(configLabel.getKey().equals("Total Time"))
+//                {
+//                    if(configLabel.getValue().split(" ")[0]. <= label.getValue().split(" ")[0])
+//                    {
+//
+//                    }
+//                }
 //            }
-//        });
-//        return recipeAns;
+//        }
 //    }
 }
+

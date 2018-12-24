@@ -50,15 +50,15 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
                                  email_SignUp.setError(getString(R.string.email_exist));
                                  email_SignUp.requestFocus();
                                  isExists = false;
-                             } else
+                             } else{
                                  isExists = true;
+                                 if (ValidateFields()) {
+                                     goToEntrySurvey();
+                                 }
+                             }
                  }
              });
-                //Check details user
-                if (ValidateFields() && isExists) {
-                    goToEntrySurvey();
-                }
-                break;
+             break;
         }
     }
 
