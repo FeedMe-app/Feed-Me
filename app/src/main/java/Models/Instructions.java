@@ -1,6 +1,11 @@
 package Models;
 
-public class Instructions
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class Instructions implements Serializable
 {
     private String key;
     public Instructions (String key)
@@ -18,4 +23,6 @@ public class Instructions
     public void setKey(String key) {
         this.key = key;
     }
+
+
 }

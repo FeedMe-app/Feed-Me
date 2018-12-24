@@ -1,9 +1,15 @@
 package Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Recipe
+import Users.RegularUser;
+
+public class Recipe implements Serializable
 {
     String name;
     String imgUrl;

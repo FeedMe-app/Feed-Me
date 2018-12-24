@@ -1,6 +1,11 @@
 package Models;
 
-public class Label
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class Label implements Serializable
 {
     String key;
     String value;
@@ -35,4 +40,6 @@ public class Label
     {
         this.value = value;
     }
+
+
 }

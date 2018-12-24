@@ -107,14 +107,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
                 goToImageSurvey();
                 break;
 
-            case R.id.yesBtn:
-                HandleLikedRecipe();
-                break;
-
-            case R.id.noBtn:
-                generateNewRecipe();
-                break;
-
             case R.id.continueBtn:
                 CompleteRegistration();
                 break;
@@ -354,15 +346,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         }
         tv = findViewById(R.id.imageTitle);
         tv.setText(currRec.getName());
-
-        LinearLayout ll = findViewById(R.id.likePassLinearLayout);
-        ll.setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
-
-        likeBtn = findViewById(R.id.yesBtn);
-        likeBtn.setOnClickListener(this);
-
-        passBtn = findViewById(R.id.noBtn);
-        passBtn.setOnClickListener(this);
 
     }
 

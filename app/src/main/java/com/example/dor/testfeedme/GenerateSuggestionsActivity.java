@@ -1,5 +1,7 @@
 package com.example.dor.testfeedme;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -28,6 +30,8 @@ import Database.GetDataFromFirebase;
 import Database.GetExtraUserData;
 import Models.DownloadImageTask;
 import Models.Recipe;
+import Register.EntrySurveyText;
+import Register.OnSwipeTouchListener;
 import Users.RegularUser;
 
 public class GenerateSuggestionsActivity extends AppCompatActivity implements
@@ -75,14 +79,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 user.setTop5FavMeal(topMeals);
                 user.setAllergies(allergies);
                 user.setDislikes(dislikes);
-                StartRecipesSuggestions();
             }
         };
-    }
-
-    private void StartRecipesSuggestions(){
-        String something;
-        System.out.println();
     }
 
     private void InitializeSideBarMenu() {
@@ -165,12 +163,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
             case R.id.feedMeBtn:
                 HandleUserChooseRecipe();
                 break;
-            case R.id.chooseBtn:
-
-                break;
-            case R.id.passChooseBtn:
-
-                break;
         }
     }
 
@@ -187,33 +179,51 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         StartShowingRecipes();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void StartShowingRecipes() {
-        currRecipeIndex++;
         setContentView(R.layout.layout_choose_recipe);
         im = findViewById(R.id.imageView);
-        imageViewHandler = new DownloadImageTask(im);
-        Recipe currRec = recipesToChooseFrom.get(currRecipeIndex);
+        im.setOnTouchListener(new OnSwipeTouchListener(GenerateSuggestionsActivity.this) {
+            public void onSwipeRight() {
+                HandleChooseBtn();
+            }
+            public void onSwipeLeft() {
+                generateNewRecipe();
+            }
+        });
+        showNewRecipe();
+    }
 
-        try {
-        Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    private void showNewRecipe() {
+        if (currRecipeIndex < recipesToChooseFrom.size() - 1){
+            imageViewHandler = new DownloadImageTask(im);
+            Recipe currRec = recipesToChooseFrom.get(currRecipeIndex);
+            currRecipeIndex++;
+            try {
+                Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            tv = findViewById(R.id.chooseRecipeImageTitle);
+            tv.setText(currRec.getName());
         }
-        tv = findViewById(R.id.chooseRecipeImageTitle);
-        tv.setText(currRec.getName());
+        else{
+            currRecipeIndex = 0;
+        }
 
-        LinearLayout ll = findViewById(R.id.chooseRecipeLinearLayout);
-        ll.setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
+    }
 
-        chooseBtn = findViewById(R.id.chooseBtn);
-        chooseBtn.setOnClickListener(this);
+    private void HandleChooseBtn() {
+        Intent showRecipeIntent = new Intent(GenerateSuggestionsActivity.this,
+                                                            ShowRecipeActivity.class);
+        showRecipeIntent.putExtra("currRecipe", recipesToChooseFrom.get(currRecipeIndex - 1));
+        startActivity(showRecipeIntent);
+    }
 
-        passBtn = findViewById(R.id.passChooseBtn);
-        passBtn.setOnClickListener(this);
-
-
+    private void generateNewRecipe(){
+        showNewRecipe();
     }
 }

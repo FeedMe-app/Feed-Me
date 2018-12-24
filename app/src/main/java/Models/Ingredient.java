@@ -1,6 +1,11 @@
 package Models;
 
-public class Ingredient
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class Ingredient implements Serializable
 {
     String key;
 
@@ -22,5 +27,6 @@ public class Ingredient
     {
         this.key = type;
     }
+
 
 }

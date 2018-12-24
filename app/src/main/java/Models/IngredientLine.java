@@ -1,6 +1,11 @@
 package Models;
 
-public class IngredientLine
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class IngredientLine implements Serializable
 {
     String key;
     String value;
@@ -33,4 +38,6 @@ public class IngredientLine
     public void setValue(String value) {
         this.value = value;
     }
+
+
 }

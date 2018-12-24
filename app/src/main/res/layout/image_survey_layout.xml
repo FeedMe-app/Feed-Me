@@ -33,41 +33,5 @@
         android:layout_width="match_parent"
         android:layout_height="365dp" />
 
-    <LinearLayout
-        android:id="@+id/likePassLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:paddingTop="30dp">
-
-        <Button
-            android:id="@+id/noBtn"
-            style="?android:textAppearanceSmall"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/passLabel" />
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="96dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@color/white" />
-
-        <Button
-            android:id="@+id/yesBtn"
-            style="?android:textAppearanceSmall"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/likeLabel" />
-    </LinearLayout>
 
 </LinearLayout>
