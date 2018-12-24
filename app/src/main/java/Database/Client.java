@@ -10,9 +10,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import Models.Ingredient;
 import Models.IngredientLine;
 import Models.Instructions;
@@ -31,6 +30,8 @@ public class Client {
     private Recipe recipe;
     private String recipeName;
     private List<Recipe> recipes = new ArrayList<>();
+
+
     public Client(){
         db = FirebaseDatabase.getInstance().getReference();
         this.user = new RegularUser();
@@ -127,7 +128,7 @@ public class Client {
     }
 
 
-    public RegularUser getUserFromDatabase(String email, final GetDataFromFirebase myCallback){
+    public void getUserFromDatabase(String email, final GetDataFromFirebase myCallback){
 
         db.child("Users").child(email.replace(".", "|")).child("Details")
                 .addValueEventListener(new ValueEventListener() {
@@ -145,8 +146,6 @@ public class Client {
                     }
                 });
 
-
-        return user;
-    }
+        }
 
 }
