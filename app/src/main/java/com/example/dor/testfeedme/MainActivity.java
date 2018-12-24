@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
@@ -70,8 +71,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 startActivity(resetPasswordActivity);
 
             case R.id.main_guest:
-                Intent entrySurveyActivity = new Intent(MainActivity.this, EntrySurveyText.class);
-                startActivity(entrySurveyActivity);
+                Intent intent = new Intent(MainActivity.this, GenerateSuggestionsActivity.class);
+                startActivity(intent);
+                break;
 
             default:
                 break;
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             return;
         }
 
+        email = email.replace("|", ".");
 
         //authenticate user
         auth.signInWithEmailAndPassword(email, password)
@@ -112,9 +115,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                             }
                         } else {
                             Toast.makeText(MainActivity.this, getString(R.string.login_successfully), Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                            Intent intent = new Intent(MainActivity.this, GenerateSuggestionsActivity.class);
                             startActivity(intent);
-                            finish();
                         }
                     }
                 });
