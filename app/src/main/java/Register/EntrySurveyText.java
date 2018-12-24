@@ -282,7 +282,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void addDislike() {
-        dislikes.add(((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).getText().toString());
+        String s = ((AutoCompleteTextView)findViewById(R.id.DislikesSearch)).getText().toString();
+        if(!s.equals(""))
+            dislikes.add(s);
     }
 
     private void HandleLikedRecipe() {
@@ -314,7 +316,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     }
 
     private void AddAllergy() {
-        allergies.add(((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString());
+        String s = ((AutoCompleteTextView)findViewById(R.id.IngredientSearch)).getText().toString();
+        if(!s.equals(""))
+            allergies.add(s);
     }
 
     private void GetAllIngredients(){
