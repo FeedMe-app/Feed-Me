@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dor.testfeedme.GenerateSuggestionsActivity;
 import com.example.dor.testfeedme.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     public void loginUser(){
 
-        final String email = emailMain.getText().toString();
+        String email = emailMain.getText().toString();
         final String password = passwordMain.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
