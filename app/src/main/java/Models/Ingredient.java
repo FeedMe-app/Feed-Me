@@ -9,6 +9,10 @@ public class Ingredient
         this.key = key;
     }
 
+    public Ingredient()
+    {
+        this.key = "";
+    }
     public String getKey()
     {
         return key;

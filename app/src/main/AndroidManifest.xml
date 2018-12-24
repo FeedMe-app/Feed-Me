@@ -20,7 +20,6 @@
 	    <activity android:name="Register.EntrySurveyText"></activity>
         <activity android:name="Register.ResetPassword" />
         <activity android:name=".GenerateSuggestionsActivity"></activity>
-        <activity android:name="Users.AfterLogin"></activity>
     </application>
 
 </manifest>

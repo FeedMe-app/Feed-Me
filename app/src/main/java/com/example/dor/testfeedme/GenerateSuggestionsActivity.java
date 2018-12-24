@@ -11,20 +11,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.List;
 
 import Database.Client;
 import Database.GetDataFromFirebase;
 import Database.GetExtraUserData;
-import Users.AfterLogin;
 import Users.RegularUser;
 
 public class GenerateSuggestionsActivity extends AppCompatActivity implements
@@ -47,8 +38,9 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     }
 
     private void GetUserExtraDetails() {
-        client.getUserExtraDetails(HandleExtraDataRecevied());
+        client.getUserExtraDetails(userEmail, HandleExtraDataRecevied());
     }
+
 
     private GetExtraUserData HandleExtraDataRecevied(){
         return new GetExtraUserData() {
@@ -77,7 +69,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
         Bundle data = getIntent().getExtras();
         userEmail= data.getString("userEmail");
-        client = new Client(userEmail);
+        client = new Client();
         addFullNameToHeaderMenu();
 
         // declaring the NavigationView
@@ -95,7 +87,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
     private void addFullNameToHeaderMenu(){
 
-        user = client.getUserFromDatabase(new GetDataFromFirebase() {
+        user = client.getUserFromDatabase(userEmail, new GetDataFromFirebase() {
             NavigationView navigationView = findViewById(R.id.menuLayout);
             View headerView = navigationView.inflateHeaderView(R.layout.header_menu);
             @Override

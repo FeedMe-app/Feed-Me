@@ -12,6 +12,12 @@ public class IngredientLine
         this.value = value;
     }
 
+    public IngredientLine()
+    {
+        this.key = "";
+        this.value = "";
+    }
+
     public String getKey() {
         return key;
     }

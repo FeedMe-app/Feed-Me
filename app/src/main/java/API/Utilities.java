@@ -2,11 +2,8 @@ package API;
 
 import android.content.Context;
 
-import Models.Ingredient;
-import Models.IngredientLine;
-import Models.Instructions;
-import Models.Label;
 import Models.Recipe;
+
 import com.example.dor.testfeedme.R;
 
 import java.io.IOException;
@@ -26,7 +23,9 @@ import org.json.simple.parser.*;
 public class Utilities {
     private static Context context;
     private static List<String> ingredients = new ArrayList<>();
-
+    public static boolean ApplicationLoaded = false;
+    static Recipe recipeAns;
+    public static List<Recipe> recipes;
     public static void setContext(Context _context){
         context = _context;
     }
@@ -64,65 +63,65 @@ public class Utilities {
             ingredients.addAll(keys);
         }
     }
-    public static Recipe loadRecipe(String name)
-    {
-        Recipe recipeObject = new Recipe();
-        JSONObject recipe = findRecipe(name);
-        if(recipe != null)
-        {
-            String headline = (String)recipe.get("headline");
-            recipeObject.setName(headline);
-
-            String image = (String)recipe.get("image");
-            recipeObject.setImgUrl(image);
-
-            if(recipe.get("labels") != null)
-            {
-                List<Map.Entry> labels = getJSONArray((JSONArray) recipe.get("labels"));
-                Iterator<Map.Entry> itr = labels.iterator();
-                while(itr.hasNext())
-                {
-                    Map.Entry<String, String> tmp = itr.next();
-                    Label label = new Label(tmp.getKey(),tmp.getValue());
-                    recipeObject.getLabels().add(label);
-                }
-            }
-
-
-            List<Map.Entry> ing = getJSONArray((JSONArray) recipe.get("ingredients"));
-            Iterator <Map.Entry> itrs = ing.iterator();
-            while(itrs.hasNext())
-            {
-                Map.Entry<String, String> tmp = itrs.next();
-                IngredientLine ingredient = new IngredientLine(tmp.getKey(),tmp.getValue());
-                recipeObject.getIngredientLine().add(ingredient);
-            }
-
-            List<Map.Entry> contains = getJSONArray((JSONArray) recipe.get("contains"));
-            Iterator <Map.Entry> itrc = contains.iterator();
-            while(itrc.hasNext())
-            {
-                Map.Entry<String, String> tmp = itrc.next();
-                Ingredient product = new Ingredient(tmp.getKey());
-                recipeObject.getIngredients().add(product);
-            }
-
-            List<Map.Entry> instructions = getJSONArray((JSONArray) recipe.get("instructions"));
-            Iterator <Map.Entry> itri = instructions.iterator();
-            while(itri.hasNext())
-            {
-                Map.Entry<String, String> tmp = itri.next();
-                Instructions instruction = new Instructions(tmp.getKey());
-                recipeObject.getInstructions().add(instruction);
-            }
-
-            return recipeObject;
-        }
-        else
-        {
-            return null;
-        }
-    }
+//    public static Recipe loadRecipe(String name)
+//    {
+//        Recipe recipeObject = new Recipe();
+//        JSONObject recipe = findRecipe(name);
+//        if(recipe != null)
+//        {
+//            String headline = (String)recipe.get("headline");
+//            recipeObject.setName(headline);
+//
+//            String image = (String)recipe.get("image");
+//            recipeObject.setImgUrl(image);
+//
+//            if(recipe.get("labels") != null)
+//            {
+//                List<Map.Entry> labels = getJSONArray((JSONArray) recipe.get("labels"));
+//                Iterator<Map.Entry> itr = labels.iterator();
+//                while(itr.hasNext())
+//                {
+//                    Map.Entry<String, String> tmp = itr.next();
+//                    Label label = new Label(tmp.getKey(),tmp.getValue());
+//                    recipeObject.getLabels().add(label);
+//                }
+//            }
+//
+//
+//            List<Map.Entry> ing = getJSONArray((JSONArray) recipe.get("ingredients"));
+//            Iterator <Map.Entry> itrs = ing.iterator();
+//            while(itrs.hasNext())
+//            {
+//                Map.Entry<String, String> tmp = itrs.next();
+//                IngredientLine ingredient = new IngredientLine(tmp.getKey(),tmp.getValue());
+//                recipeObject.getIngredientLine().add(ingredient);
+//            }
+//
+//            List<Map.Entry> contains = getJSONArray((JSONArray) recipe.get("contains"));
+//            Iterator <Map.Entry> itrc = contains.iterator();
+//            while(itrc.hasNext())
+//            {
+//                Map.Entry<String, String> tmp = itrc.next();
+//                Ingredient product = new Ingredient(tmp.getKey());
+//                recipeObject.getIngredients().add(product);
+//            }
+//
+//            List<Map.Entry> instructions = getJSONArray((JSONArray) recipe.get("instructions"));
+//            Iterator <Map.Entry> itri = instructions.iterator();
+//            while(itri.hasNext())
+//            {
+//                Map.Entry<String, String> tmp = itri.next();
+//                Instructions instruction = new Instructions(tmp.getKey());
+//                recipeObject.getInstructions().add(instruction);
+//            }
+//
+//            return recipeObject;
+//        }
+//        else
+//        {
+//            return null;
+//        }
+//    }
     public static JSONObject findRecipe(String name)
     {
         InputStream in = context.getResources().openRawResource(R.raw.recipe_data);
@@ -181,4 +180,15 @@ public class Utilities {
 
         return listOfRecipes;
     }
+
+//    public static Recipe loadRecipeByName(Client rec)
+//    {
+//        recipeAns = rec.getRecipeFromDatabase(new GetRecipeFromDatabase() {
+//            @Override
+//            public void onCallbackRecipe(Recipe recipe) {
+//                recipeAns = recipe;
+//            }
+//        });
+//        return recipeAns;
+//    }
 }
