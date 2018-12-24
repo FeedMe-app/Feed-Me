@@ -112,8 +112,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                         } else {
                             Toast.makeText(MainActivity.this, getString(R.string.login_successfully), Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(MainActivity.this, GenerateSuggestionsActivity.class);
-                            //Intent intent = new Intent(MainActivity.this, AfterLogin.class);
-                            //intent.putExtra("userEmail", email);
+                            intent.putExtra("userEmail", email);
                             startActivity(intent);
                         }
                     }

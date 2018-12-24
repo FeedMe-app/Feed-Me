@@ -13,8 +13,11 @@ import android.widget.Toast;
 
 import com.example.dor.testfeedme.R;
 
+import java.util.List;
+
 import Database.Client;
 import Database.GetDataFromFirebase;
+import Database.GetExtraUserData;
 
 public class AfterLogin extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -32,6 +35,32 @@ public class AfterLogin extends AppCompatActivity implements
         setContentView(R.layout.activity_after_login);
 
 
+        InitializeSideBarMenu();
+        GetUserExtraDetails();
+
+
+    }
+
+    private void GetUserExtraDetails() {
+        client.getUserExtraDetails(HandleExtraDataRecevied());
+    }
+
+    private GetExtraUserData HandleExtraDataRecevied(){
+        return new GetExtraUserData() {
+            @Override
+            public void onCallback(List<String> topIngreds, List<String> topMeals) {
+                user.setTop10FavIngredients(topIngreds);
+                user.setTop5FavMeal(topMeals);
+                StartRecipesSuggestions();
+            }
+        };
+    }
+
+    private void StartRecipesSuggestions(){
+
+    }
+
+    private void InitializeSideBarMenu() {
         drawerLayout = findViewById(R.id.drawer);
         aToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(aToggle);
@@ -49,8 +78,6 @@ public class AfterLogin extends AppCompatActivity implements
         navigationView = findViewById(R.id.menuLayout);
         // assigning the listener to the NavigationView
         navigationView.setNavigationItemSelectedListener(this);
-
-
     }
 
     @Override
