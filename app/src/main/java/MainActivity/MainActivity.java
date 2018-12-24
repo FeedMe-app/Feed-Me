@@ -20,11 +20,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import API.RecipeConfig;
 import API.Utilities;
 import Database.Client;
 import Database.GetRecipeFromDatabase;
+import Models.Ingredient;
 import Models.Recipe;
 import Register.ResetPassword;
 
