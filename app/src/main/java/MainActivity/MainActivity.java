@@ -12,12 +12,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dor.testfeedme.GenerateSuggestionsActivity;
 import com.example.dor.testfeedme.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-
+import com.google.firebase.auth.FirebaseUser;
 import Register.ResetPassword;
 import Users.AfterLogin;
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     public void loginUser(){
 
-        final String email = emailMain.getText().toString();
+        String email = emailMain.getText().toString();
         final String password = passwordMain.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             return;
         }
 
+        email = email.replace("|", ".");
 
         //authenticate user
         auth.signInWithEmailAndPassword(email, password)
@@ -111,10 +113,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                             }
                         } else {
                             Toast.makeText(MainActivity.this, getString(R.string.login_successfully), Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(MainActivity.this, AfterLogin.class);
-                            intent.putExtra("userEmail", email);
+                            Intent intent = new Intent(MainActivity.this, GenerateSuggestionsActivity.class);
+                            //Intent intent = new Intent(MainActivity.this, AfterLogin.class);
+                            //intent.putExtra("userEmail", email);
                             startActivity(intent);
-                            finish();
                         }
                     }
                 });

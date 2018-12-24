@@ -17,9 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name="Register.signUp" />
-        <activity android:name="Register.EntrySurveyText" />
+	<activity android:name=".EntrySurveyText"></activity>
         <activity android:name="Register.ResetPassword" />
-        <activity android:name="Users.AfterLogin"></activity>
+	<activity android:name=".ResetPassword"></activity>
+        <activity android:name=".GenerateSuggestionsActivity"></activity>
     </application>
 
 </manifest>
