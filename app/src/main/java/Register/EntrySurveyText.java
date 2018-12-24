@@ -324,7 +324,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void goToImageSurvey(){
-        currRecipeIndex++;
+        Random rand = new Random();
+        currRecipeIndex = rand.nextInt(Utilities.recipes.size() - 1);
         setContentView(R.layout.image_survey_layout);
         im = findViewById(R.id.imageView);
         imageViewHandler = new DownloadImageTask(im);
