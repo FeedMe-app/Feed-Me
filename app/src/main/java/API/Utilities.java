@@ -119,11 +119,11 @@ public class Utilities {
     private static double checkIngredients(Recipe rec, RecipeConfig con)
     {
         double matchRate = 0;
-        for(Ingredient configIng : con.ingredients)
+        for(String configIng : con.ingredients)
         {
             for(Ingredient ing : rec.getIngredients())
             {
-                if(ing.getKey().equals(configIng.getKey()))
+                if(ing.getKey().equals(configIng))
                 {
                     matchRate++;
                     continue;
@@ -144,12 +144,12 @@ public class Utilities {
                 {
                     if (configAlle.equals(ing.getKey()))
                     {
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     private  static double checkDislikes(Recipe rec, RecipeConfig con)

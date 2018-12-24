@@ -1,6 +1,9 @@
 package com.example.dor.testfeedme;
 
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -8,18 +11,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
+import API.RecipeConfig;
+import API.Utilities;
 import Database.Client;
 import Database.GetDataFromFirebase;
 import Database.GetExtraUserData;
+import Models.DownloadImageTask;
+import Models.Recipe;
 import Users.RegularUser;
 
 public class GenerateSuggestionsActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener{
+        NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
 
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle aToggle;
@@ -27,6 +39,14 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     RegularUser user;
     Client client;
     NavigationView navigationView;
+    private Button feedMeBtn;
+    private Button passBtn;
+    private Button chooseBtn;
+    private List<Recipe> recipesToChooseFrom;
+    private int currRecipeIndex;
+    private ImageView im;
+    private DownloadImageTask imageViewHandler;
+    private TextView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +55,17 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
         InitializeSideBarMenu();
         GetUserExtraDetails();
+        InitializeButtonListener();
+    }
+
+    private void InitializeButtonListener() {
+        feedMeBtn = findViewById(R.id.feedMeBtn);
+        feedMeBtn.setOnClickListener(this);
     }
 
     private void GetUserExtraDetails() {
         client.getUserExtraDetails(userEmail, HandleExtraDataRecevied());
     }
-
 
     private GetExtraUserData HandleExtraDataRecevied(){
         return new GetExtraUserData() {
@@ -133,4 +158,62 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         return false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.feedMeBtn:
+                HandleUserChooseRecipe();
+                break;
+            case R.id.chooseBtn:
+
+                break;
+            case R.id.passChooseBtn:
+
+                break;
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void HandleUserChooseRecipe() {
+        RecipeConfig config = new RecipeConfig(user.getTop10FavIngredients());
+        if (user.getAllergies().size() > 0){
+            config.setAllergies(user.getAllergies());
+        }
+        if (user.getDislikes().size() > 0){
+            config.setDislikes(user.getDislikes());
+        }
+        recipesToChooseFrom = Utilities.findRecpiesByUserPreferences(config);
+        StartShowingRecipes();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void StartShowingRecipes() {
+        currRecipeIndex++;
+        setContentView(R.layout.layout_choose_recipe);
+        im = findViewById(R.id.imageView);
+        imageViewHandler = new DownloadImageTask(im);
+        Recipe currRec = recipesToChooseFrom.get(currRecipeIndex);
+
+        try {
+        Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        tv = findViewById(R.id.chooseRecipeImageTitle);
+        tv.setText(currRec.getName());
+
+        LinearLayout ll = findViewById(R.id.chooseRecipeLinearLayout);
+        ll.setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
+
+        chooseBtn = findViewById(R.id.chooseBtn);
+        chooseBtn.setOnClickListener(this);
+
+        passBtn = findViewById(R.id.passChooseBtn);
+        passBtn.setOnClickListener(this);
+
+
+    }
 }

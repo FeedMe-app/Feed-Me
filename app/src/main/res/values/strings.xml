@@ -18,7 +18,6 @@
     <string name="reset_password_msg2">Failed to send reset email!</string>
     <string name="register_mail">Enter your registered email</string>
     <string name="EntrySurveyTestTitle">Entry Survey</string>
-    <string name="ChooseRecipeTitle">Choose Recipe</string>
     <string name="Allergies">Allergies</string>
     <string name="KosherLabel">Kosher</string>
     <string name="NotKosherLabel">Not Kosher</string>
@@ -30,8 +29,8 @@
     <string name="passLabel">Pass</string>
     <string name="regCompletedLabel">Registration Completed!</string>
     <string name="continueLabel">Continue</string>
-    <string name="chooseLabel">Please Choose</string>
     <string name="DislikesLabel">Dislikes</string>
+    <string name="chooseLabel">Choose</string>
     <string name="requiredError">Field is required</string>
     <string name="onlyLettersError">Use letters only</string>
     <string name="close">Close</string>
