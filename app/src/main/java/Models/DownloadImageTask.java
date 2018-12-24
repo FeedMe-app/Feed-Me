@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme.Models;
+package Models;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

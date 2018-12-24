@@ -33,4 +33,6 @@
     <string name="DislikesLabel">Dislikes</string>
     <string name="requiredError">Field is required</string>
     <string name="onlyLettersError">Use letters only</string>
+    <string name="close">Close</string>
+    <string name="open">Open</string>
 </resources>

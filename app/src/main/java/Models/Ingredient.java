@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme.Models;
+package Models;
 
 public class Ingredient
 {

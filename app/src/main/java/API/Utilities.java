@@ -1,20 +1,14 @@
-package com.example.dor.testfeedme.API;
+package API;
 
-import android.app.AppComponentFactory;
 import android.content.Context;
-import android.renderscript.ScriptGroup;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
 
-import com.example.dor.testfeedme.Models.Ingredient;
-import com.example.dor.testfeedme.Models.IngredientLine;
-import com.example.dor.testfeedme.Models.Instructions;
-import com.example.dor.testfeedme.Models.Label;
-import com.example.dor.testfeedme.Models.Recipe;
+import Models.Ingredient;
+import Models.IngredientLine;
+import Models.Instructions;
+import Models.Label;
+import Models.Recipe;
 import com.example.dor.testfeedme.R;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -82,14 +76,18 @@ public class Utilities {
             String image = (String)recipe.get("image");
             recipeObject.setImgUrl(image);
 
-            List<Map.Entry> labels = getJSONArray((JSONArray) recipe.get("labels"));
-            Iterator<Map.Entry> itr = labels.iterator();
-            while(itr.hasNext())
+            if(recipe.get("labels") != null)
             {
-                Map.Entry<String, String> tmp = itr.next();
-                Label label = new Label(tmp.getKey(),tmp.getValue());
-                recipeObject.getLabels().add(label);
+                List<Map.Entry> labels = getJSONArray((JSONArray) recipe.get("labels"));
+                Iterator<Map.Entry> itr = labels.iterator();
+                while(itr.hasNext())
+                {
+                    Map.Entry<String, String> tmp = itr.next();
+                    Label label = new Label(tmp.getKey(),tmp.getValue());
+                    recipeObject.getLabels().add(label);
+                }
             }
+
 
             List<Map.Entry> ing = getJSONArray((JSONArray) recipe.get("ingredients"));
             Iterator <Map.Entry> itrs = ing.iterator();
@@ -147,7 +145,11 @@ public class Utilities {
     {
         List<Map.Entry> listOfKeyValuePair = new ArrayList<>();
         Iterator itr = arr.iterator();
-        itr.next();
+        if(itr.hasNext())
+        {
+            itr.next();
+        }
+
         while (itr.hasNext())
         {
             Object object = itr.next();
@@ -158,9 +160,9 @@ public class Utilities {
         }
         return listOfKeyValuePair;
     }
-    public static List<Recipe> getRecipes()
+    public static List<String> getRecipes()
     {
-        List<Recipe> listOfRecipes = new ArrayList<>();
+        List<String> listOfRecipes = new ArrayList<>();
         InputStream in = context.getResources().openRawResource(R.raw.recipe_data);
         JSONObject jsonObj;
         JSONParser jsonParser = new JSONParser();
@@ -169,7 +171,7 @@ public class Utilities {
             for(Iterator iterator = jsonObj.keySet().iterator(); iterator.hasNext();)
             {
                 String key = (String) iterator.next();
-                listOfRecipes.add(loadRecipe(key));
+                listOfRecipes.add(key);
             }
         } catch (IOException e) {
             e.printStackTrace();
