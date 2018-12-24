@@ -1,5 +1,6 @@
 package Register;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -86,9 +87,11 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onClick(View v) {
+
         switch (v.getId()){
             case R.id.addAllergyBtn:
                 AddAllergy();
@@ -287,6 +290,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         generateNewRecipe();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void generateNewRecipe() {
         if (chosenRecipes.size() < MAXIMUM_CHOSEN_RECIPES){
             currRecipeIndex++;
@@ -322,13 +326,23 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         Utilities.setContext(this);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void goToImageSurvey(){
         Random rand = new Random();
         currRecipeIndex = rand.nextInt(Utilities.recipes.size() - 1);
         setContentView(R.layout.image_survey_layout);
         im = findViewById(R.id.imageView);
+        im.setOnTouchListener(new OnSwipeTouchListener(EntrySurveyText.this) {
+            public void onSwipeRight() {
+                HandleLikedRecipe();
+            }
+            public void onSwipeLeft() {
+                generateNewRecipe();
+            }
+        });
         imageViewHandler = new DownloadImageTask(im);
+
         Recipe currRec = Utilities.recipes.get(currRecipeIndex);
 
         try {
