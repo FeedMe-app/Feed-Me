@@ -19,6 +19,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.List;
+
+import API.Utilities;
+import Database.Client;
+import Database.GetRecipeFromDatabase;
+import Models.Recipe;
 import Register.ResetPassword;
 import Users.AfterLogin;
 
@@ -28,12 +36,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     EditText emailMain, passwordMain;
     TextView forgotPasswordMain;
     private FirebaseAuth auth;
+    private List<Recipe> recipes;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Utilities.ApplicationLoaded = true;
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         auth = FirebaseAuth.getInstance();
 
         //////////////// Sign Up ////////////////
@@ -50,6 +61,19 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         signIn.setOnClickListener(this);
         forgotPasswordMain = findViewById(R.id.main_ForgotPassword);
         forgotPasswordMain.setOnClickListener(this);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Client client = new Client();
+                client.getAllRecipes(new GetRecipeFromDatabase() {
+                    @Override
+                    public void onCallbackRecipe(List<Recipe> recipes) {
+                        Utilities.recipes = recipes;
+                    }
+                });
+            }
+        }).start();
         //enterAsGuest = findViewById(R.id.main_guest);
 
 
@@ -65,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 break;
 
             case R.id.main_signIn:
-                    loginUser();
+                loginUser();
                 break;
 
             case R.id.main_ForgotPassword:
@@ -111,9 +135,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                             }
                         } else {
                             Toast.makeText(MainActivity.this, getString(R.string.login_successfully), Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(MainActivity.this, GenerateSuggestionsActivity.class);
-                            //Intent intent = new Intent(MainActivity.this, AfterLogin.class);
-                            //intent.putExtra("userEmail", email);
+                            //Intent intent = new Intent(MainActivity.this, GenerateSuggestionsActivity.class);
+                            Intent intent = new Intent(MainActivity.this, AfterLogin.class);
+                            intent.putExtra("userEmail", email);
                             startActivity(intent);
                         }
                     }

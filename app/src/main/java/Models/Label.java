@@ -11,6 +11,11 @@ public class Label
         this.value = value;
     }
 
+    public Label()
+    {
+        this.key = "";
+        this.value = "";
+    }
     public String getKey()
     {
         return key;

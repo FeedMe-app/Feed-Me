@@ -13,8 +13,11 @@ import android.widget.Toast;
 
 import com.example.dor.testfeedme.R;
 
+import API.Utilities;
 import Database.Client;
 import Database.GetDataFromFirebase;
+import Database.GetRecipeFromDatabase;
+import Models.Recipe;
 
 public class AfterLogin extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -25,7 +28,7 @@ public class AfterLogin extends AppCompatActivity implements
     RegularUser user;
     Client client;
     NavigationView navigationView;
-
+    Recipe test;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +45,7 @@ public class AfterLogin extends AppCompatActivity implements
 
         Bundle data = getIntent().getExtras();
         userEmail= data.getString("userEmail");
-        client = new Client(userEmail);
+        client = new Client();
         addFullNameToHeaderMenu();
 
         // declaring the NavigationView
@@ -62,7 +65,7 @@ public class AfterLogin extends AppCompatActivity implements
 
     private void addFullNameToHeaderMenu(){
 
-        user = client.getUserFromDatabase(new GetDataFromFirebase() {
+        user = client.getUserFromDatabase(userEmail, new GetDataFromFirebase() {
             NavigationView navigationView = findViewById(R.id.menuLayout);
             View headerView = navigationView.inflateHeaderView(R.layout.header_menu);
             @Override
@@ -80,6 +83,7 @@ public class AfterLogin extends AppCompatActivity implements
 
     }
 
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
@@ -90,7 +94,9 @@ public class AfterLogin extends AppCompatActivity implements
                 Toast.makeText(AfterLogin.this, "yesss", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.recipeHistory:
-                // do you click actions for the second selection
+//                Client rec = new Client("Grilled Fruit Packets");
+//                Recipe recipeAns = Utilities.loadRecipeByName(rec);
+//                Toast.makeText(AfterLogin.this,recipeAns.getName(),Toast.LENGTH_LONG).show();
                 break;
             case R.id.share:
                 // do you click actions for the third selection

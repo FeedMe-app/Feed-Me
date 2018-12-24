@@ -7,7 +7,10 @@ public class Instructions
     {
         this.key = key;
     }
-
+    public Instructions()
+    {
+        key = "";
+    }
     public String getKey() {
         return key;
     }

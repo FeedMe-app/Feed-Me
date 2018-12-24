@@ -78,8 +78,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
 
         allergies = new ArrayList<>();
         dislikes = new ArrayList<>();
-        getAllRecipes();
-        loadTenRecipes();
+        //getAllRecipes();
+        //loadTenRecipes();
         Bundle data = getIntent().getExtras();
         newUser= data.getParcelable("newUser");
 
@@ -316,13 +316,13 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private void generateNewRecipe() {
         if (chosenRecipes.size() < MAXIMUM_CHOSEN_RECIPES){
             currRecipeIndex++;
-            if (currRecipeIndex == chunckOfTenRecipes.size())
-            {
-
-                loadTenRecipes();
-                currRecipeIndex = 1;
-
-            }
+//            if (currRecipeIndex == chunckOfTenRecipes.size())
+//            {
+//
+//                loadTenRecipes();
+//                currRecipeIndex = 1;
+//
+//            }
             Recipe currRec = chunckOfTenRecipes.get(currRecipeIndex);
             imageViewHandler = new DownloadImageTask(im);
             try {
@@ -374,7 +374,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         int randNum = rand.nextInt(recipes.size() - 10);
         for (int i=0; i<10 ; i++)
         {
-            chunckOfTenRecipes.add(Utilities.loadRecipe(recipes.get(randNum)));
+            //chunckOfTenRecipes.add(Utilities.loadRecipe(recipes.get(randNum)));
             randNum += 1;
         }
 
@@ -387,11 +387,11 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         im = findViewById(R.id.imageView);
         imageViewHandler = new DownloadImageTask(im);
         Recipe currRec = chunckOfTenRecipes.get(currRecipeIndex);
-        if (currRecipeIndex == chunckOfTenRecipes.size())
-        {
-            loadTenRecipes();
-            currRecipeIndex = 1;
-        }
+//        if (currRecipeIndex == chunckOfTenRecipes.size())
+//        {
+//            loadTenRecipes();
+//            currRecipeIndex = 1;
+//        }
         try {
             // Bitmap res = imageViewHandler.execute(recipes.get(currRecipeIndex).getImgUrl()).get();
             Bitmap res = imageViewHandler.execute(currRec.getImgUrl()).get();
