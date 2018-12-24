@@ -8,14 +8,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import Users.RegularUser;
 
-public class Claint {
+public class Client {
 
 
     private DatabaseReference db;
     private RegularUser user;
     private String email;
 
-    public Claint(String email){
+    public Client(String email){
         db = FirebaseDatabase.getInstance().getReference();
         this.user = new RegularUser();
         this.email = email;

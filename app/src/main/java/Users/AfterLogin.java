@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.example.dor.testfeedme.R;
 
-import Database.Claint;
+import Database.Client;
 import Database.GetDataFromFirebase;
 
 public class AfterLogin extends AppCompatActivity implements
@@ -23,7 +23,7 @@ public class AfterLogin extends AppCompatActivity implements
     ActionBarDrawerToggle aToggle;
     String userEmail;
     RegularUser user;
-    Claint claint;
+    Client client;
     NavigationView navigationView;
 
     @Override
@@ -42,7 +42,7 @@ public class AfterLogin extends AppCompatActivity implements
 
         Bundle data = getIntent().getExtras();
         userEmail= data.getString("userEmail");
-        claint = new Claint(userEmail);
+        client = new Client(userEmail);
         addFullNameToHeaderMenu();
 
         // declaring the NavigationView
@@ -62,7 +62,7 @@ public class AfterLogin extends AppCompatActivity implements
 
     private void addFullNameToHeaderMenu(){
 
-        user = claint.getUserFromDatabase(new GetDataFromFirebase() {
+        user = client.getUserFromDatabase(new GetDataFromFirebase() {
             NavigationView navigationView = findViewById(R.id.menuLayout);
             View headerView = navigationView.inflateHeaderView(R.layout.header_menu);
             @Override
