@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     public void loginUser(){
 
-        String email = emailMain.getText().toString();
+        final String email = emailMain.getText().toString().replace("|", ".");
         final String password = passwordMain.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
@@ -93,8 +93,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             Toast.makeText(getApplicationContext(), getString(R.string.enter_password), Toast.LENGTH_SHORT).show();
             return;
         }
-
-        email = email.replace("|", ".");
 
         //authenticate user
         auth.signInWithEmailAndPassword(email, password)
