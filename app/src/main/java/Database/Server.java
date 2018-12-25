@@ -24,10 +24,18 @@ public class Server{
     private FirebaseAuth mAuth;
     private DatabaseReference db;
 
+    private static Server _instance;
 
-    public Server(){
+    private Server(){
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance().getReference();
+    }
+
+    public static Server The(){
+        if (_instance == null){
+            _instance = new Server();
+        }
+        return _instance;
     }
 
     public void registerNewUser(final RegularUser user, String pass){
@@ -83,5 +91,13 @@ public class Server{
 
         db.child("Users").child(user.getEmail().replace(".", "|")).child("top5Meal")
                 .setValue(user.getTop5FavMeal());
+
+        db.child("Users").child(user.getEmail().replace(".", "|")).child("Details")
+                .child("kosher")
+                .setValue(user.getKosher());
+
+        db.child("Users").child(user.getEmail().replace(".", "|")).child("Details")
+                .child("userClassification")
+                .setValue(user.getUserClassification());
     }
 }

@@ -14,21 +14,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import API.RecipeConfig;
 import API.Utilities;
 import Database.Client;
 import Database.GetDataFromFirebase;
-import Database.GetExtraUserData;
 import Models.DownloadImageTask;
 import Models.Recipe;
-import Register.EntrySurveyText;
 import Register.OnSwipeTouchListener;
 import Users.RegularUser;
 
@@ -39,7 +35,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     ActionBarDrawerToggle aToggle;
     String userEmail;
     RegularUser userDetails;
-    Client client;
     NavigationView navigationView;
     private Button feedMeBtn;
     private Button passBtn;
@@ -56,9 +51,30 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_generate_suggestions);
 
         userDetails = new RegularUser();
+
+        Bundle data = getIntent().getExtras();
+        userEmail= data.getString("userEmail");
+
+
         InitializeSideBarMenu();
-        GetUserExtraDetails();
+        GetUserDetails();
         InitializeButtonListener();
+    }
+
+    private void GetUserDetails() {
+        Client.The().getUserFromDatabase(userEmail, new GetDataFromFirebase() {
+            @Override
+            public void onCallback(RegularUser user) {
+                userDetails = user;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        addFullNameToHeaderMenu();
+                    }
+                });
+
+            }
+        });
     }
 
     private void InitializeButtonListener() {
@@ -66,20 +82,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         feedMeBtn.setOnClickListener(this);
     }
 
-    private void GetUserExtraDetails() {
-        client.getUserExtraDetails(userEmail, HandleExtraDataRecevied());
-    }
-    private GetExtraUserData HandleExtraDataRecevied(){
-        return new GetExtraUserData() {
-            @Override
-            public void onCallback(List<String> topIngreds, List<String> topMeals, List<String> allergies, List<String> dislikes) {
-                userDetails.setTop10FavIngredients(topIngreds);
-                userDetails.setTop5FavMeal(topMeals);
-                userDetails.setAllergies(allergies);
-                userDetails.setDislikes(dislikes);
-            }
-        };
-    }
 
     private void InitializeSideBarMenu() {
         drawerLayout = findViewById(R.id.drawer);
@@ -87,12 +89,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         drawerLayout.addDrawerListener(aToggle);
         aToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-        Bundle data = getIntent().getExtras();
-        userEmail= data.getString("userEmail");
-        client = new Client();
-        addFullNameToHeaderMenu();
 
         // declaring the NavigationView
         navigationView = findViewById(R.id.menuLayout);
@@ -108,24 +104,17 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     }
 
     private void addFullNameToHeaderMenu(){
-
-         client.getUserFromDatabase(userEmail, new GetDataFromFirebase() {
             NavigationView navigationView = findViewById(R.id.menuLayout);
             View headerView = navigationView.inflateHeaderView(R.layout.header_menu);
-            @Override
-            public void onCallback(RegularUser user) {
-                userDetails = user;
-                TextView emailMenu = headerView.findViewById(R.id.email_menu);
-                emailMenu.setText(userDetails.getEmail());
 
-                TextView fullnameMenu = headerView.findViewById(R.id.name_menu);
-                fullnameMenu.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
+            TextView emailMenu = headerView.findViewById(R.id.email_menu);
+            emailMenu.setText(userDetails.getEmail());
 
-                TextView classifictionMenu = headerView.findViewById(R.id.classifiction_menu);
-                classifictionMenu.setText(userDetails.getUserClassification());
-            }
-        });
+            TextView fullnameMenu = headerView.findViewById(R.id.name_menu);
+            fullnameMenu.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
 
+            TextView classifictionMenu = headerView.findViewById(R.id.classifiction_menu);
+            classifictionMenu.setText(userDetails.getUserClassification());
     }
 
     public boolean onNavigationItemSelected(MenuItem menuItem) {

@@ -54,7 +54,6 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private int currRecipeIndex = 0;
     private final int MAXIMUM_CHOSEN_RECIPES = 10;
     private RegularUser newUser;
-    private Server sv = new Server();
     private Button addAllergyBtn;
     private Button addDislikeBtn;
     private Button nextBtn;
@@ -118,7 +117,9 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         newUser.setDislikes(dislikes);
         newUser.setTop5FavMeal(GetTop5Recipes());
         newUser.setTop10FavIngredients(GetTop10Ingreds());
-        sv.completeRegister(newUser);
+        newUser.setUserClassification(FoodType);
+        newUser.setKosher(isKosher);
+        Server.The().completeRegister(newUser);
         Toast.makeText(EntrySurveyText.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
         Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
         startActivity(login);
@@ -142,10 +143,10 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         ingredsCount = sortMap(ingredsCount);
         int counter = 0;
         for (Ingredient in : ingredsCount.keySet()){
-            counter++;
             if (counter < 10){
                 rc.add(in.getKey());
             }
+            counter++;
         }
 
         return rc;

@@ -1,6 +1,7 @@
 
 package Database;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -32,23 +33,27 @@ public class Client {
     private List<String> topMeals = new ArrayList<>();
     private List<String> allergies = new ArrayList<>();
     private List<String> dislikes = new ArrayList<>();
+    private String classificiation;
+    private boolean isKosher;
     private Recipe recipe;
     private String recipeName;
     private List<Recipe> recipes = new ArrayList<>();
     boolean ingreds, meals, alregs, dlikes;
 
+    private static Client _instance;
 
-    public Client(){
+    private Client(){
         db = FirebaseDatabase.getInstance().getReference();
         this.user = new RegularUser();
-        //this.email = email;
     }
 
-    public Client(String recipeName){
-        db = FirebaseDatabase.getInstance().getReference();
-        this.recipe = new Recipe();
-        this.recipeName = recipeName;
-	}
+    public static Client The(){
+        if (_instance == null){
+            _instance = new Client();
+        }
+        return _instance;
+    }
+
     private void getTop5Meals(String email) {
         db.child("Users").child(email.replace(".", "|")).child("top5Meal")
                 .addValueEventListener(new ValueEventListener() {
@@ -67,22 +72,6 @@ public class Client {
 
                     }
                 });
-    }
-	
-    public void getUserExtraDetails(String email, final GetExtraUserData callBack){
-	    getTop10Ingredients(email);
-	    getTop5Meals(email);
-	    // add allergies and dislikes
-        getDislikes(email);
-        getAllergies(email);
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                while (!ingreds || !meals || !alregs || !dlikes) {}
-                callBack.onCallback(topIngreds, topMeals, allergies, dislikes);
-            }
-        });
-
     }
 
     private void getAllergies(String email) {
@@ -193,8 +182,7 @@ public class Client {
 
     }
 
-
-    public void getUserFromDatabase(String email, final GetDataFromFirebase myCallback){
+    public void getUserFromDatabase(final String email, final GetDataFromFirebase myCallback){
 
         db.child("Users").child(email.replace(".", "|")).child("Details")
                 .addValueEventListener(new ValueEventListener() {
@@ -202,7 +190,22 @@ public class Client {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             user = dataSnapshot.getValue(RegularUser.class);
-                            myCallback.onCallback(user);
+                            getAllergies(email);
+                            getDislikes(email);
+                            getTop5Meals(email);
+                            getTop10Ingredients(email);
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    while (!ingreds || !meals || !alregs || !dlikes) { }
+                                    user.setTop10FavIngredients(topIngreds);
+                                    user.setTop5FavMeal(topMeals);
+                                    user.setAllergies(allergies);
+                                    user.setDislikes(dislikes);
+
+                                    myCallback.onCallback(user);
+                                }
+                            });
                         }
                     }
 
@@ -212,6 +215,27 @@ public class Client {
                     }
                 });
 
-        }
+    }
+
+
+//    public void getUserFromDatabase(String email, final GetDataFromFirebase myCallback){
+//
+//        db.child("Users").child(email.replace(".", "|")).child("Details")
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()) {
+//                            user = dataSnapshot.getValue(RegularUser.class);
+//                            myCallback.onCallback(user);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+//
+//        }
 
 }

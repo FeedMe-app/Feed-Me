@@ -21,10 +21,6 @@
         <activity android:name="Register.ResetPassword" />
         <activity android:name=".GenerateSuggestionsActivity" />
 
-        <service
-            android:name="Models.DBPullService"
-            android:exported="false" />
-
         <activity android:name=".ShowRecipeActivity"></activity>
     </application>
 

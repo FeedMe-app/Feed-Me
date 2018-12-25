@@ -1,7 +1,6 @@
 package MainActivity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,14 +20,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import API.RecipeConfig;
 import API.Utilities;
 import Database.Client;
 import Database.GetRecipeFromDatabase;
-import Models.DBPullService;
 import Models.Recipe;
 import Register.ResetPassword;
 
@@ -47,8 +43,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         setContentView(R.layout.activity_main);
         if (!Utilities.ApplicationLoaded) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            Intent intent = new Intent(this, DBPullService.class);
-            startService(intent);
+            Client.The().getAllRecipes(new GetRecipeFromDatabase() {
+                @Override
+                public void onCallbackRecipe(List<Recipe> recipes) {
+                    Utilities.recipes = recipes;
+                }
+            });
         }
             Utilities.ApplicationLoaded = true;
             auth = FirebaseAuth.getInstance();

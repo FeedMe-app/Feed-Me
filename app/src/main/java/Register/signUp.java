@@ -18,7 +18,6 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
     private EditText email_SignUp, password_SignUp, firstName_SignUp, lastName_SignUp, yearOfBirth_SignUp;
     private Button signUpButton;
     private boolean isExists = false;
-    private Server sv = new Server();
     public static int userID=0;
 
     @Override
@@ -43,7 +42,7 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
 
             case R.id.signUp_button:
                 //Check if email exists
-             sv.checkIfEmailExists(email_SignUp.getText().toString(), new OnEmailCheckListener() {
+             Server.The().checkIfEmailExists(email_SignUp.getText().toString(), new OnEmailCheckListener() {
                  @Override
                  public void onSucess(Boolean emailExist) {
                              if (!emailExist) {
@@ -70,7 +69,7 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
                 yearOfBirth_SignUp.getText().toString());
 
         //Add new user to firebase
-        sv.registerNewUser(user, password_SignUp.getText().toString());
+        Server.The().registerNewUser(user, password_SignUp.getText().toString());
 
         //Full register
         entrySurveyActivity.putExtra("newUser", user);

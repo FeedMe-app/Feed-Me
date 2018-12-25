@@ -28,7 +28,6 @@ public class RegularUser implements user, Parcelable {
         this.lastName = lastName;
         this.email = email;
         this.yearOfBirth = yearOfBirth;
-        userClassification = "Regular";
         isKosher = true;
         allergies = new ArrayList<>();
         dislikes = new ArrayList<>();
@@ -38,12 +37,19 @@ public class RegularUser implements user, Parcelable {
     }
 
 
-
     public RegularUser() {}
 
 
     public int getUserID() {
         return userID;
+    }
+
+    public boolean getKosher() {
+        return isKosher;
+    }
+
+    public void setKosher(boolean kosher) {
+        isKosher = kosher;
     }
 
 
