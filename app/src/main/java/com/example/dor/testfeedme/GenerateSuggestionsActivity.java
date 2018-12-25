@@ -178,6 +178,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void StartShowingRecipes() {
         setContentView(R.layout.layout_choose_recipe);
+        InitializeSideBarMenu();
+        addFullNameToHeaderMenu();
         im = findViewById(R.id.imageView);
         im.setOnTouchListener(new OnSwipeTouchListener(GenerateSuggestionsActivity.this) {
             public void onSwipeRight() {
@@ -228,6 +230,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         userDetails.getRecipeHistory().add(curr.getName());
         Server.The().UpdateUserRecipeHistory(userEmail, userDetails.getRecipeHistory());
         showRecipeIntent.putExtra("currRecipe", curr);
+        showRecipeIntent.putExtra("currUser", userDetails);
         startActivity(showRecipeIntent);
     }
 
