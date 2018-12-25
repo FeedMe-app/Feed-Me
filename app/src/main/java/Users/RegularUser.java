@@ -38,7 +38,7 @@ public class RegularUser implements user, Parcelable {
 
     ////////////////Constructor////////////
 
-    public RegularUser(String firstName, String lastName, String email, String yearOfBirth) {
+    public RegularUser(String firstName, String lastName, String email, String yearOfBirth, boolean isPremium) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -49,6 +49,7 @@ public class RegularUser implements user, Parcelable {
         top5FavMeal = new ArrayList<>();
         top10FavIngredients = new ArrayList<>();
         this.userID = signUp.userID++;
+        this.isPremium = isPremium;
     }
 
 
@@ -102,7 +103,13 @@ public class RegularUser implements user, Parcelable {
         this.email = email;
     }
 
+    public boolean isPremium() {
+        return isPremium;
+    }
 
+    public void setPremium(boolean premium) {
+        isPremium = premium;
+    }
 
     public String getYearOfBirth() {
         return yearOfBirth;
