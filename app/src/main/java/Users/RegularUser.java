@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
+import Models.Recipe;
 import Register.signUp;
 
 public class RegularUser implements user, Parcelable {
@@ -18,6 +19,16 @@ public class RegularUser implements user, Parcelable {
     private List<String> dislikes;
     private List<String> top5FavMeal;
     private List<String> top10FavIngredients;
+
+    public List<String> getRecipeHistory() {
+        return recipeHistory;
+    }
+
+    public void setRecipeHistory(List<String> recipeHistory) {
+        this.recipeHistory = recipeHistory;
+    }
+
+    private List<String> recipeHistory;
     private int userID;
 
 

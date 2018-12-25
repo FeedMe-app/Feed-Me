@@ -23,6 +23,7 @@ import API.RecipeConfig;
 import API.Utilities;
 import Database.Client;
 import Database.GetDataFromFirebase;
+import Database.Server;
 import Models.DownloadImageTask;
 import Models.Recipe;
 import Register.OnSwipeTouchListener;
@@ -37,8 +38,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     RegularUser userDetails;
     NavigationView navigationView;
     private Button feedMeBtn;
-    private Button passBtn;
-    private Button chooseBtn;
     private List<Recipe> recipesToChooseFrom;
     private int currRecipeIndex;
     private ImageView im;
@@ -176,6 +175,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void StartShowingRecipes() {
         setContentView(R.layout.layout_choose_recipe);
+        aToggle.syncState();
         im = findViewById(R.id.imageView);
         im.setOnTouchListener(new OnSwipeTouchListener(GenerateSuggestionsActivity.this) {
             public void onSwipeRight() {
@@ -222,7 +222,11 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private void HandleChooseBtn() {
         Intent showRecipeIntent = new Intent(GenerateSuggestionsActivity.this,
                                                             ShowRecipeActivity.class);
-        showRecipeIntent.putExtra("currRecipe", recipesToChooseFrom.get(currRecipeIndex - 1));
+        Recipe curr = recipesToChooseFrom.get(currRecipeIndex - 1);
+        userDetails.getRecipeHistory().add(curr.getName());
+        Server.The().UpdateUserRecipeHistory(userEmail, userDetails.getRecipeHistory());
+        showRecipeIntent.putExtra("currRecipe", curr);
+
         startActivity(showRecipeIntent);
     }
 

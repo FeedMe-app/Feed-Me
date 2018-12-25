@@ -24,7 +24,7 @@ import java.util.List;
 
 import API.Utilities;
 import Database.Client;
-import Database.GetRecipeFromDatabase;
+import Database.GetRecipesFromDatabase;
 import Models.Recipe;
 import Register.ResetPassword;
 
@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         setContentView(R.layout.activity_main);
         if (!Utilities.ApplicationLoaded) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            Client.The().getAllRecipes(new GetRecipeFromDatabase() {
+            Client.The().getAllRecipes(new GetRecipesFromDatabase() {
                 @Override
-                public void onCallbackRecipe(List<Recipe> recipes) {
+                public void onCallbackRecipes(List<Recipe> recipes) {
                     Utilities.recipes = recipes;
                 }
             });

@@ -4,7 +4,7 @@ import java.util.List;
 
 import Models.Recipe;
 
-public interface GetRecipeFromDatabase
+public interface GetRecipesFromDatabase
 {
-    void onCallbackRecipe(List<Recipe> recipes);
+    void onCallbackRecipes(List<Recipe> recipes);
 }

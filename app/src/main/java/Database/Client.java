@@ -1,7 +1,6 @@
 
 package Database;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -13,9 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import API.Utilities;
 import Models.Ingredient;
 import Models.IngredientLine;
 import Models.Instructions;
@@ -33,12 +30,13 @@ public class Client {
     private List<String> topMeals = new ArrayList<>();
     private List<String> allergies = new ArrayList<>();
     private List<String> dislikes = new ArrayList<>();
+    private List<String> recipeHistory = new ArrayList<>();
     private String classificiation;
     private boolean isKosher;
     private Recipe recipe;
     private String recipeName;
     private List<Recipe> recipes = new ArrayList<>();
-    boolean ingreds, meals, alregs, dlikes;
+    private boolean ingreds, meals, alregs, dlikes, history;
 
     private static Client _instance;
 
@@ -52,6 +50,10 @@ public class Client {
             _instance = new Client();
         }
         return _instance;
+    }
+
+    private void Clear(){
+        _instance = new Client();
     }
 
     private void getTop5Meals(String email) {
@@ -137,9 +139,45 @@ public class Client {
                 });
     }
 
+    private void getRecipeHistory(String email) {
+        db.child("Users").child(email.replace(".", "|")).child("RecipeHistory")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Iterable<DataSnapshot> historyIter = dataSnapshot.getChildren();
+                            for (DataSnapshot dss : historyIter){
+                                recipeHistory.add(dss.getValue().toString());
+                            }
+                        }
+                        history = true;
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    public void getRecipeByName(String recipeName, final GetRecipeFromDatabase callback){
+        db.child("Recipes").child(recipeName).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    callback.onCallbackRecipe(createRecipeFromSnapShot(dataSnapshot));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Error
+            }
+        });
+    }
 
 
-    public void getAllRecipes(final GetRecipeFromDatabase callback){
+    public void getAllRecipes(final GetRecipesFromDatabase callback){
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -148,27 +186,9 @@ public class Client {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()){
                             for (DataSnapshot dss : dataSnapshot.getChildren()){
-                                String name = String.valueOf(dss.child("name").getValue());
-                                String img = String.valueOf(dss.child("imgUrl").getValue());
-                                List<Label> labels = new ArrayList<>();
-                                List<Ingredient> ingredients = new ArrayList<>();
-                                List<IngredientLine> ingredientLines = new ArrayList<>();
-                                List<Instructions> instructions = new ArrayList<>();
-                                for (DataSnapshot labelDss : dss.child("labels").getChildren()){
-                                    labels.add(labelDss.getValue(Label.class));
-                                }
-                                for (DataSnapshot ingredDss : dss.child("ingredients").getChildren()){
-                                    ingredients.add(ingredDss.getValue(Ingredient.class));
-                                }
-                                for (DataSnapshot ingredLineDss : dss.child("ingredientLine").getChildren()){
-                                    ingredientLines.add(ingredLineDss.getValue(IngredientLine.class));
-                                }
-                                for (DataSnapshot instrucDss : dss.child("instructions").getChildren()){
-                                    instructions.add(instrucDss.getValue(Instructions.class));
-                                }
-                                recipes.add(new Recipe(name, img, ingredients, labels, instructions, ingredientLines));
+                                recipes.add(createRecipeFromSnapShot(dss));
                             }
-                            callback.onCallbackRecipe(recipes);
+                            callback.onCallbackRecipes(recipes);
                         }
                     }
 
@@ -182,8 +202,30 @@ public class Client {
 
     }
 
-    public void getUserFromDatabase(final String email, final GetDataFromFirebase myCallback){
+    private Recipe createRecipeFromSnapShot(DataSnapshot dss){
+        String name = dss.child("name").getValue(String.class);
+        String img = dss.child("imgUrl").getValue(String.class);
+        List<Label> labels = new ArrayList<>();
+        List<Ingredient> ingredients = new ArrayList<>();
+        List<IngredientLine> ingredientLines = new ArrayList<>();
+        List<Instructions> instructions = new ArrayList<>();
+        for (DataSnapshot labelDss : dss.child("labels").getChildren()){
+            labels.add(labelDss.getValue(Label.class));
+        }
+        for (DataSnapshot ingredDss : dss.child("ingredients").getChildren()){
+            ingredients.add(ingredDss.getValue(Ingredient.class));
+        }
+        for (DataSnapshot ingredLineDss : dss.child("ingredientLine").getChildren()){
+            ingredientLines.add(ingredLineDss.getValue(IngredientLine.class));
+        }
+        for (DataSnapshot instrucDss : dss.child("instructions").getChildren()){
+            instructions.add(instrucDss.getValue(Instructions.class));
+        }
+        return new Recipe(name, img, ingredients, labels, instructions, ingredientLines);
+    }
 
+    public void getUserFromDatabase(final String email, final GetDataFromFirebase myCallback){
+        Clear();
         db.child("Users").child(email.replace(".", "|")).child("Details")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -194,14 +236,16 @@ public class Client {
                             getDislikes(email);
                             getTop5Meals(email);
                             getTop10Ingredients(email);
+                            getRecipeHistory(email);
                             AsyncTask.execute(new Runnable() {
                                 @Override
                                 public void run() {
-                                    while (!ingreds || !meals || !alregs || !dlikes) { }
+                                    while (!ingreds || !meals || !alregs || !dlikes || !history) { }
                                     user.setTop10FavIngredients(topIngreds);
                                     user.setTop5FavMeal(topMeals);
                                     user.setAllergies(allergies);
                                     user.setDislikes(dislikes);
+                                    user.setRecipeHistory(recipeHistory);
 
                                     myCallback.onCallback(user);
                                 }
@@ -214,28 +258,5 @@ public class Client {
 
                     }
                 });
-
     }
-
-
-//    public void getUserFromDatabase(String email, final GetDataFromFirebase myCallback){
-//
-//        db.child("Users").child(email.replace(".", "|")).child("Details")
-//                .addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        if (dataSnapshot.exists()) {
-//                            user = dataSnapshot.getValue(RegularUser.class);
-//                            myCallback.onCallback(user);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
-//
-//        }
-
 }
