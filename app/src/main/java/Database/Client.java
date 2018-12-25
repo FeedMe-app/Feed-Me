@@ -11,7 +11,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import Models.Ingredient;
 import Models.IngredientLine;
@@ -30,7 +32,7 @@ public class Client {
     private List<String> topMeals = new ArrayList<>();
     private List<String> allergies = new ArrayList<>();
     private List<String> dislikes = new ArrayList<>();
-    private List<String> recipeHistory = new ArrayList<>();
+    private Set<String> recipeHistory = new HashSet<>();
     private String classificiation;
     private boolean isKosher;
     private Recipe recipe;

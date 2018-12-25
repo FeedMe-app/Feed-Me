@@ -4,7 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import Models.Recipe;
 import Register.signUp;
@@ -20,15 +23,15 @@ public class RegularUser implements user, Parcelable {
     private List<String> top5FavMeal;
     private List<String> top10FavIngredients;
 
-    public List<String> getRecipeHistory() {
+    public Set<String> getRecipeHistory() {
         return recipeHistory;
     }
 
-    public void setRecipeHistory(List<String> recipeHistory) {
-        this.recipeHistory = recipeHistory;
+    public void setRecipeHistory(Set<String> recipeHistory) {
+        this.recipeHistory = new HashSet<>(recipeHistory);
     }
 
-    private List<String> recipeHistory;
+    private Set<String> recipeHistory;
     private int userID;
 
 

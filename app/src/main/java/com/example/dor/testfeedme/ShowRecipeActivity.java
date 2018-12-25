@@ -60,6 +60,11 @@ public class ShowRecipeActivity extends AppCompatActivity {
         InitializeInstructions();
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
     private void InitializeInstructions() {
         instrucstionsLinearLayout = findViewById(R.id.InstrucstionsLinearLayout);
         if (currRecipe.getInstructions().size() > 0){

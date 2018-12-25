@@ -13,7 +13,9 @@ import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import Models.Recipe;
 import Register.OnEmailCheckListener;
@@ -104,8 +106,8 @@ public class Server{
                 .setValue(user.getUserClassification());
     }
 
-    public void UpdateUserRecipeHistory(String userEmail, List<String> history) {
+    public void UpdateUserRecipeHistory(String userEmail, Set<String> history) {
         db.child("Users").child(userEmail.replace(".","|")).child("RecipeHistory")
-                .setValue(history);
+                .setValue(new ArrayList<>(history));
     }
 }

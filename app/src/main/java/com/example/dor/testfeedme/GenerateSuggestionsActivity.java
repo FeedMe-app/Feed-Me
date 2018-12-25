@@ -47,6 +47,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_generate_suggestions);
 
         userDetails = new RegularUser();
@@ -160,14 +161,16 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 	
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void HandleUserChooseRecipe() {
-        RecipeConfig config = new RecipeConfig(userDetails.getTop10FavIngredients());
-        if (userDetails.getAllergies().size() > 0){
-            config.setAllergies(userDetails.getAllergies());
+        if (recipesToChooseFrom == null || recipesToChooseFrom.size() == 0){
+            RecipeConfig config = new RecipeConfig(userDetails.getTop10FavIngredients());
+            if (userDetails.getAllergies().size() > 0){
+                config.setAllergies(userDetails.getAllergies());
+            }
+            if (userDetails.getDislikes().size() > 0){
+                config.setDislikes(userDetails.getDislikes());
+            }
+            recipesToChooseFrom = Utilities.findRecpiesByUserPreferences(config);
         }
-        if (userDetails.getDislikes().size() > 0){
-            config.setDislikes(userDetails.getDislikes());
-        }
-        recipesToChooseFrom = Utilities.findRecpiesByUserPreferences(config);
         StartShowingRecipes();
     }
 
@@ -175,7 +178,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void StartShowingRecipes() {
         setContentView(R.layout.layout_choose_recipe);
-        aToggle.syncState();
         im = findViewById(R.id.imageView);
         im.setOnTouchListener(new OnSwipeTouchListener(GenerateSuggestionsActivity.this) {
             public void onSwipeRight() {
@@ -226,11 +228,18 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         userDetails.getRecipeHistory().add(curr.getName());
         Server.The().UpdateUserRecipeHistory(userEmail, userDetails.getRecipeHistory());
         showRecipeIntent.putExtra("currRecipe", curr);
-
         startActivity(showRecipeIntent);
     }
 
     private void generateNewRecipe(){
         showNewRecipe();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setContentView(R.layout.activity_generate_suggestions);
+        InitializeButtonListener();
+        InitializeSideBarMenu();
+        addFullNameToHeaderMenu();
     }
 }
