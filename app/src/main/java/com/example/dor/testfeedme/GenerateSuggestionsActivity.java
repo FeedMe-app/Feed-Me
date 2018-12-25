@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,7 +44,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private ImageView im;
     private DownloadImageTask imageViewHandler;
     private TextView tv;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,6 +151,10 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
         TextView fullnameProfile = findViewById(R.id.name_profile);
         fullnameProfile.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
+
+        TextView premium = findViewById(R.id.Premium);
+        String text = (userDetails.isPremium()) ? "Premium" : "Premium Not Actived";
+        premium.setText(text);
 
         TextView classifictionProfile = findViewById(R.id.classificrion_profile);
         classifictionProfile.setText(userDetails.getUserClassification());

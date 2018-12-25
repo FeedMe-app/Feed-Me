@@ -39,6 +39,15 @@
             android:textColor="@color/address"
             android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/Premium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="85dp"
+            android:fontFamily="sans-serif-light"
+            android:textSize="14sp" />
+
     </RelativeLayout>
 
 

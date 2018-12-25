@@ -104,6 +104,10 @@ public class Server{
         db.child("Users").child(user.getEmail().replace(".", "|")).child("Details")
                 .child("userClassification")
                 .setValue(user.getUserClassification());
+
+        db.child("Users").child(user.getEmail().replace(".", "|")).child("Details")
+                .child("premium")
+                .setValue(user.isPremium());
     }
 
     public void UpdateUserRecipeHistory(String userEmail, Set<String> history) {

@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -64,7 +65,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private RadioGroup VeganRadioGroup;
     private ImageView im;
     private TextView tv;
-
+    private CheckBox premium;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         newUser.setTop10FavIngredients(GetTop10Ingreds());
         newUser.setUserClassification(FoodType);
         newUser.setKosher(isKosher);
+        boolean isPremium = (premium.isChecked()) ? true : false;
+        newUser.setPremium(isPremium);
         Server.The().completeRegister(newUser);
         Toast.makeText(EntrySurveyText.this, getString(R.string.register_success), Toast.LENGTH_LONG).show();
         Intent login = new Intent(EntrySurveyText.this, MainActivity.class);
@@ -193,10 +196,16 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
         addDislikeBtn = findViewById(R.id.addDisklikeBtn);
         addDislikeBtn.setOnClickListener(this);
 
+        InitializeCheckboxListener();
+
         nextBtn = findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(this);
 
         InitializeRadioGroupsListeners();
+    }
+
+    private void InitializeCheckboxListener() {
+        premium = findViewById(R.id.premiumCheckBox);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

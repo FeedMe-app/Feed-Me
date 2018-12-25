@@ -38,8 +38,8 @@ public class Client {
     private Recipe recipe;
     private String recipeName;
     private List<Recipe> recipes = new ArrayList<>();
-    private boolean ingreds, meals, alregs, dlikes, history;
-
+    private boolean ingreds, meals, alregs, dlikes, history, premium;
+    private boolean isPremium;
     private static Client _instance;
 
     private Client(){
@@ -132,6 +132,31 @@ public class Client {
                             }
                         }
                         ingreds = true;
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void getPremium(String email) {
+        db.child("Users").child(email.replace(".", "|")).child("Details")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Iterable<DataSnapshot> detailsIter = dataSnapshot.getChildren();
+                            for (DataSnapshot dss : detailsIter){
+                                if((dss.getKey().toString().equals("premium")))
+                                {
+                                    String tmp = dss.getValue().toString();
+                                    isPremium = tmp.equals("true");
+                                }
+                            }
+                        }
+                        premium = true;
                     }
 
                     @Override
@@ -239,16 +264,17 @@ public class Client {
                             getTop5Meals(email);
                             getTop10Ingredients(email);
                             getRecipeHistory(email);
+                            getPremium(email);
                             AsyncTask.execute(new Runnable() {
                                 @Override
                                 public void run() {
-                                    while (!ingreds || !meals || !alregs || !dlikes || !history) { }
+                                    while (!ingreds || !meals || !alregs || !dlikes || !history || !premium) { }
                                     user.setTop10FavIngredients(topIngreds);
                                     user.setTop5FavMeal(topMeals);
                                     user.setAllergies(allergies);
                                     user.setDislikes(dislikes);
                                     user.setRecipeHistory(recipeHistory);
-
+                                    user.setPremium(isPremium);
                                     myCallback.onCallback(user);
                                 }
                             });

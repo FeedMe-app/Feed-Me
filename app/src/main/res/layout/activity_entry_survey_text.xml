@@ -145,7 +145,13 @@
                 android:text="@string/VeganLabel"
                 android:layout_marginLeft="20dp"/>
         </RadioGroup>
-
+        <CheckBox
+            android:id="@+id/premiumCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Premium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/nextBtn"
