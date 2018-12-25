@@ -48,8 +48,8 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
     private List<String> recipes = new ArrayList<>();
     private List<Recipe> chosenRecipes = new ArrayList<>();
     private List<Recipe> chunckOfTenRecipes = new ArrayList<>();
-    private Boolean isKosher;
-    private String FoodType;
+    private boolean isKosher = true;
+    private String FoodType = "Regular";
     private DownloadImageTask imageViewHandler;
     private int currRecipeIndex = 0;
     private final int MAXIMUM_CHOSEN_RECIPES = 10;
