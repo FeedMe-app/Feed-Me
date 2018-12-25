@@ -22,6 +22,7 @@ public class RegularUser implements user, Parcelable {
     private List<String> dislikes;
     private List<String> top5FavMeal;
     private List<String> top10FavIngredients;
+    private boolean isPremium;
 
     public Set<String> getRecipeHistory() {
         return recipeHistory;
