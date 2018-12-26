@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -135,7 +134,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 // do you click actions for the third selection
                 break;
             case R.id.logOut:
-                // do you click actions for the third selection
+                logOutMenu();
                 break;
         }
 
@@ -162,7 +161,17 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         TextView yearOfBirthProfile = findViewById(R.id.yearOfBirth_profile);
         yearOfBirthProfile.setText(userDetails.getYearOfBirth());
     }
-	
+
+
+    private void logOutMenu(){
+        Client.The().logOutUser();
+        Intent intent = new Intent(GenerateSuggestionsActivity.this, MainActivity.MainActivity.class);
+        startActivity(intent);
+
+    }
+
+
+
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void HandleUserChooseRecipe() {
         if (recipesToChooseFrom == null || recipesToChooseFrom.size() == 0){
