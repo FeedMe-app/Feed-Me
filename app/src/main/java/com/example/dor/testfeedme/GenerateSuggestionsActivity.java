@@ -10,8 +10,12 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+
 import android.text.Editable;
 import android.text.TextWatcher;
+
+import android.util.Log;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -56,6 +60,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_suggestions);
         chosenIng = new ArrayList<>();
+        findViewById(R.id.feedMeBtn).setEnabled(false);
         userDetails = new RegularUser();
         Bundle data = getIntent().getExtras();
         userEmail= data.getString("userEmail");
@@ -63,6 +68,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         GetUserDetails();
         InitializeButtonListener();
         InitializeTextViewListeners();
+
     }
 
     private void GetUserDetails() {
@@ -73,6 +79,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        InitializeButtonListener();
                         addFullNameToHeaderMenu();
                     }
                 });
@@ -83,6 +90,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
     private void InitializeButtonListener() {
         feedMeBtn = findViewById(R.id.feedMeBtn);
+        feedMeBtn.setEnabled(true);
         feedMeBtn.setOnClickListener(this);
         initializeIngAdding();
     }
@@ -237,6 +245,9 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
             united.addAll(this.chosenIng);
             united.addAll(userDetails.getTop10FavIngredients());
             RecipeConfig config = new RecipeConfig(united);
+            Log.i("TOP INGREDIENTS: ", userDetails.getTop10FavIngredients().toString());
+
+
             if (userDetails.getAllergies().size() > 0){
                 config.setAllergies(userDetails.getAllergies());
             }

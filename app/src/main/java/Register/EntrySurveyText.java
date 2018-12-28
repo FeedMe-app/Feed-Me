@@ -34,6 +34,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import API.Utilities;
+import Database.InternetConnection;
 import Database.Server;
 import MainActivity.MainActivity;
 import Models.DownloadImageTask;
@@ -108,6 +109,10 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case R.id.continueBtn:
+                //check if is internet connection
+                if(!InternetConnection.isNetworkNetworkAvailable(EntrySurveyText.this))
+                    Toast.makeText(EntrySurveyText.this, "No Internet connection",Toast.LENGTH_SHORT).show();
+                else
                 CompleteRegistration();
                 break;
         }

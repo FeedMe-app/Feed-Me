@@ -25,6 +25,7 @@ import java.util.List;
 import API.Utilities;
 import Database.Client;
 import Database.GetRecipesFromDatabase;
+import Database.InternetConnection;
 import Models.Recipe;
 import Register.ResetPassword;
 
@@ -36,11 +37,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private FirebaseAuth auth;
     private List<Recipe> recipes;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //check if is internet connection
+        if(!InternetConnection.isNetworkNetworkAvailable(MainActivity.this))
+            Toast.makeText(MainActivity.this, "No Internet connection",Toast.LENGTH_SHORT).show();
+
+
         if (!Utilities.ApplicationLoaded) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             Client.The().getAllRecipes(new GetRecipesFromDatabase() {
