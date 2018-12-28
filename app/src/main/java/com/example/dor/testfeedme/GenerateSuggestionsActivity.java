@@ -10,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -49,6 +50,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_generate_suggestions);
 
+        findViewById(R.id.feedMeBtn).setEnabled(false);
+
         userDetails = new RegularUser();
 
         Bundle data = getIntent().getExtras();
@@ -57,7 +60,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
         InitializeSideBarMenu();
         GetUserDetails();
-        InitializeButtonListener();
     }
 
     private void GetUserDetails() {
@@ -68,6 +70,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        InitializeButtonListener();
                         addFullNameToHeaderMenu();
                     }
                 });
@@ -78,6 +81,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 
     private void InitializeButtonListener() {
         feedMeBtn = findViewById(R.id.feedMeBtn);
+        feedMeBtn.setEnabled(true);
         feedMeBtn.setOnClickListener(this);
     }
 
@@ -175,6 +179,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void HandleUserChooseRecipe() {
         if (recipesToChooseFrom == null || recipesToChooseFrom.size() == 0){
+            Log.i("TOP INGREDIENTS: ", userDetails.getTop10FavIngredients().toString());
             RecipeConfig config = new RecipeConfig(userDetails.getTop10FavIngredients());
             if (userDetails.getAllergies().size() > 0){
                 config.setAllergies(userDetails.getAllergies());
