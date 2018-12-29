@@ -9,6 +9,7 @@ import Models.Label;
 public class RecipeConfig
 {
     List<String> ingredients;
+    List<String> topTenIngredients;
     List<Label> labels;
     List<String> allergies;
     List<String> dislikes;
@@ -45,11 +46,20 @@ public class RecipeConfig
         this.dislikes = dislikes;
     }
 
-    public  RecipeConfig(List<String> ingredients)
+    public List<String> getTopTenIngredients() {
+        return topTenIngredients;
+    }
+
+    public void setTopTenIngredients(List<String> topTenIngredients) {
+        this.topTenIngredients = topTenIngredients;
+    }
+
+    public  RecipeConfig(List<String> topTenIngredients)
     {
-        this.ingredients = new ArrayList<>(ingredients);
+        this.topTenIngredients = new ArrayList<>(topTenIngredients);
         //this.labels = new ArrayList<>();
         this.allergies = new ArrayList<>();
         this.dislikes = new ArrayList<>();
+        this.ingredients = new ArrayList<>();
     }
 }

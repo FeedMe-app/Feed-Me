@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import API.RecipeConfig;
@@ -241,13 +242,12 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void HandleUserChooseRecipe() {
         if (recipesToChooseFrom == null || recipesToChooseFrom.size() == 0){
-            List<String> united = new ArrayList<>(0);
-            united.addAll(this.chosenIng);
-            united.addAll(userDetails.getTop10FavIngredients());
-            RecipeConfig config = new RecipeConfig(united);
+            RecipeConfig config = new RecipeConfig(userDetails.getTop10FavIngredients());
             Log.i("TOP INGREDIENTS: ", userDetails.getTop10FavIngredients().toString());
-
-
+            if(chosenIng.size() > 0)
+            {
+                config.setIngredients(chosenIng);
+            }
             if (userDetails.getAllergies().size() > 0){
                 config.setAllergies(userDetails.getAllergies());
             }
@@ -255,6 +255,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 config.setDislikes(userDetails.getDislikes());
             }
             recipesToChooseFrom = Utilities.findRecpiesByUserPreferences(config);
+            Log.i("SIZE:", (String.valueOf(recipesToChooseFrom.size())));
         }
         StartShowingRecipes();
     }
