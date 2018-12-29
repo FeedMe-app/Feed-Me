@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     NavigationView navigationView;
     private Button feedMeBtn;
     private Button addIngBtn;
+    boolean isFinishLoadingUser;
     private List<String> ingredients;
     private List<String> chosenIng;
     private List<Recipe> recipesToChooseFrom;
@@ -56,6 +58,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private ImageView im;
     private DownloadImageTask imageViewHandler;
     private TextView tv;
+    LinearLayout search;
+    LinearLayout searchHeadline;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,12 +71,15 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         userEmail= data.getString("userEmail");
         InitializeSideBarMenu();
         GetUserDetails();
+        search = (LinearLayout) findViewById(R.id.SearchLinearLayout);
+        searchHeadline = (LinearLayout) findViewById(R.id.SearchHeadlineLinearLayout);
         InitializeButtonListener();
         InitializeTextViewListeners();
 
     }
 
     private void GetUserDetails() {
+
         Client.The().getUserFromDatabase(userEmail, new GetDataFromFirebase() {
             @Override
             public void onCallback(RegularUser user) {
@@ -82,11 +89,25 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                     public void run() {
                         InitializeButtonListener();
                         addFullNameToHeaderMenu();
+                        initializePremium();
+                        Log.i("is",String.valueOf(userDetails.isPremium()));
+
                     }
                 });
 
             }
         });
+
+    }
+    private void initializePremium()
+    {
+        search = (LinearLayout) findViewById(R.id.SearchLinearLayout);
+        searchHeadline = (LinearLayout) findViewById(R.id.SearchHeadlineLinearLayout);
+        if(!userDetails.isPremium())
+        {
+            search.setVisibility(View.GONE);
+            searchHeadline.setVisibility(View.GONE);
+        }
     }
 
     private void InitializeButtonListener() {
@@ -334,5 +355,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         InitializeButtonListener();
         InitializeSideBarMenu();
         addFullNameToHeaderMenu();
+        initializePremium();
+        InitializeTextViewListeners();
     }
 }
