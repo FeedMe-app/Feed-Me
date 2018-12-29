@@ -10,12 +10,9 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextWatcher;
-
 import android.util.Log;
-
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,7 +21,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -71,8 +67,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         userEmail= data.getString("userEmail");
         InitializeSideBarMenu();
         GetUserDetails();
-        search = (LinearLayout) findViewById(R.id.SearchLinearLayout);
-        searchHeadline = (LinearLayout) findViewById(R.id.SearchHeadlineLinearLayout);
+        search = findViewById(R.id.SearchLinearLayout);
+        searchHeadline = findViewById(R.id.SearchHeadlineLinearLayout);
         InitializeButtonListener();
         InitializeTextViewListeners();
 
@@ -90,7 +86,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                         InitializeButtonListener();
                         addFullNameToHeaderMenu();
                         initializePremium();
-                        Log.i("is",String.valueOf(userDetails.isPremium()));
 
                     }
                 });
@@ -101,8 +96,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     }
     private void initializePremium()
     {
-        search = (LinearLayout) findViewById(R.id.SearchLinearLayout);
-        searchHeadline = (LinearLayout) findViewById(R.id.SearchHeadlineLinearLayout);
+        search = findViewById(R.id.SearchLinearLayout);
+        searchHeadline = findViewById(R.id.SearchHeadlineLinearLayout);
         if(!userDetails.isPremium())
         {
             search.setVisibility(View.GONE);
