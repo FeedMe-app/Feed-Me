@@ -12,6 +12,7 @@
         <activity android:name="MainActivity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -19,8 +20,8 @@
         <activity android:name="Register.EntrySurveyText" />
         <activity android:name="Register.ResetPassword" />
         <activity android:name=".GenerateSuggestionsActivity" />
-
-        <activity android:name=".ShowRecipeActivity"></activity>
+        <activity android:name=".ShowRecipeActivity" />
+        <activity android:name=".GuestActivity"></activity>
     </application>
 
 </manifest>

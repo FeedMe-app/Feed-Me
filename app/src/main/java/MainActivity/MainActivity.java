@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dor.testfeedme.GenerateSuggestionsActivity;
+import com.example.dor.testfeedme.GuestActivity;
 import com.example.dor.testfeedme.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,6 +29,7 @@ import Database.GetRecipesFromDatabase;
 import Database.InternetConnection;
 import Models.Recipe;
 import Register.ResetPassword;
+
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
@@ -89,12 +91,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             case R.id.main_signIn:
                 loginUser();
                 break;
-
+            case R.id.main_guest:
+                Intent GuestActivity = new Intent(MainActivity.this, GuestActivity.class);
+                startActivity(GuestActivity);
+                break;
             case R.id.main_ForgotPassword:
                 Intent resetPasswordActivity = new Intent(MainActivity.this, ResetPassword.class);
                 startActivity(resetPasswordActivity);
-                
-
+                break;
             default:
                 break;
         }
