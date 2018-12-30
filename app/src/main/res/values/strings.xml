@@ -24,7 +24,7 @@
     <string name="RegularLabel">Regular</string>
     <string name="VegetarianLabel">Vegetarian</string>
     <string name="VeganLabel">Vegan</string>
-    <string name="email">Email:</string>
+    <string name="email">Email</string>
     <string name="yearOfBirth">Year of birth:</string>
     <string name="nextBtnText">Next Stage</string>
     <string name="likeLabel">Like</string>
@@ -37,4 +37,9 @@
     <string name="onlyLettersError">Use letters only</string>
     <string name="close">Close</string>
     <string name="open">Open</string>
+    <string name="firstName">First Name</string>
+    <string name="lastName">Last Name</string>
+    <string name="classification">User Classification</string>
+
+
 </resources>
