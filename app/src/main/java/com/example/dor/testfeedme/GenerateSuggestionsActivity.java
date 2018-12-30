@@ -1,10 +1,12 @@
 package com.example.dor.testfeedme;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -23,13 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import API.RecipeConfig;
 import API.Utilities;
 import Database.Client;
 import Database.GetDataFromFirebase;
+import Database.GetRecipesFromDatabase;
 import Database.Server;
 import Models.DownloadImageTask;
 import Models.Recipe;
@@ -54,6 +56,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private ImageView im;
     private DownloadImageTask imageViewHandler;
     private TextView tv;
+    private boolean initialized;
     LinearLayout search;
     LinearLayout searchHeadline;
     @Override
@@ -62,19 +65,14 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_generate_suggestions);
         chosenIng = new ArrayList<>();
         findViewById(R.id.feedMeBtn).setEnabled(false);
-        userDetails = new RegularUser();
         Bundle data = getIntent().getExtras();
-        userEmail= data.getString("userEmail");
-        InitializeSideBarMenu();
-        GetUserDetails();
-        search = findViewById(R.id.SearchLinearLayout);
-        searchHeadline = findViewById(R.id.SearchHeadlineLinearLayout);
-        InitializeButtonListener();
-        InitializeTextViewListeners();
-
+        userEmail = data.getString("userEmail");
+        getUserDetails();
+        initialized = true;
     }
 
-    private void GetUserDetails() {
+
+    private void getUserDetails() {
 
         Client.The().getUserFromDatabase(userEmail, new GetDataFromFirebase() {
             @Override
@@ -84,9 +82,10 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                     @Override
                     public void run() {
                         InitializeButtonListener();
+                        InitializeSideBarMenu();
                         addFullNameToHeaderMenu();
                         initializePremium();
-
+                        handleSpinnerEnd();
                     }
                 });
 
@@ -94,6 +93,12 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         });
 
     }
+
+    private void handleSpinnerEnd(){
+        findViewById(R.id.startupLinearLayout).setVisibility(View.GONE);
+        findViewById(R.id.mainLinearLayout).setVisibility(View.VISIBLE);
+    }
+
     private void initializePremium()
     {
         search = findViewById(R.id.SearchLinearLayout);
@@ -102,6 +107,9 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         {
             search.setVisibility(View.GONE);
             searchHeadline.setVisibility(View.GONE);
+        }
+        else {
+            InitializeTextViewListeners();
         }
     }
 
@@ -251,6 +259,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private void logOutMenu(){
         Client.The().logOutUser();
         Intent intent = new Intent(GenerateSuggestionsActivity.this, MainActivity.MainActivity.class);
+        finish();
         startActivity(intent);
 
     }
@@ -258,22 +267,45 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void HandleUserChooseRecipe() {
         if (recipesToChooseFrom == null || recipesToChooseFrom.size() == 0){
-            RecipeConfig config = new RecipeConfig(userDetails.getTop10FavIngredients());
-            Log.i("TOP INGREDIENTS: ", userDetails.getTop10FavIngredients().toString());
-            if(chosenIng.size() > 0)
-            {
-                config.setIngredients(chosenIng);
+            if (!userDetails.getUserClassification().equals("Regular")){
+                Client.The().getVegetarianRecipes(new GetRecipesFromDatabase() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    @Override
+                    public void onCallbackRecipes(List<Recipe> recipes) {
+                        Utilities.recipes = recipes;
+                        getRecipesByConfig();
+                        StartShowingRecipes();
+                    }
+                });
             }
-            if (userDetails.getAllergies().size() > 0){
-                config.setAllergies(userDetails.getAllergies());
+            else {
+                getRecipesByConfig();
+                StartShowingRecipes();
             }
-            if (userDetails.getDislikes().size() > 0){
-                config.setDislikes(userDetails.getDislikes());
-            }
-            recipesToChooseFrom = Utilities.findRecpiesByUserPreferences(config);
-            Log.i("SIZE:", (String.valueOf(recipesToChooseFrom.size())));
         }
-        StartShowingRecipes();
+        else {
+            StartShowingRecipes();
+        }
+    }
+
+    private void getRecipesByConfig(){
+        RecipeConfig config = new RecipeConfig(userDetails.getTop10FavIngredients());
+        Log.i("TOP INGREDIENTS: ", userDetails.getTop10FavIngredients().toString());
+        if(chosenIng.size() > 0)
+        {
+            config.setIngredients(chosenIng);
+        }
+        if (userDetails.getAllergies().size() > 0){
+            config.setAllergies(userDetails.getAllergies());
+        }
+        if (userDetails.getDislikes().size() > 0){
+            config.setDislikes(userDetails.getDislikes());
+        }
+        recipesToChooseFrom = Utilities.findRecpiesByUserPreferences(config);
+        if (recipesToChooseFrom.size() < 20){
+            recipesToChooseFrom = Utilities.recipes;
+        }
+        Log.i("SIZE:", (String.valueOf(recipesToChooseFrom.size())));
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -352,5 +384,6 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         addFullNameToHeaderMenu();
         initializePremium();
         InitializeTextViewListeners();
+        handleSpinnerEnd();
     }
 }

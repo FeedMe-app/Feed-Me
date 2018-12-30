@@ -38,6 +38,7 @@ public class Utilities {
     public static void setContext(Context _context){
         context = _context;
     }
+    public static String RecipeMode;
 
     public static List<String> getIngredients()
     {
