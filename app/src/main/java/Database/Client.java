@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import API.Utilities;
 import Models.Ingredient;
 import Models.IngredientLine;
 import Models.Instructions;
@@ -55,8 +56,8 @@ public class Client {
         return _instance;
     }
 
-    private void Clear(){
-        _instance = new Client();
+    private void clearUser(){
+        this.user = new RegularUser();
     }
 
     private void getTop5Meals(String email) {
@@ -204,6 +205,33 @@ public class Client {
         });
     }
 
+    public void getVegetarianRecipes(final GetRecipesFromDatabase callback){
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                db.child("Recipes").child("Vegetarian").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            for (DataSnapshot dss : dataSnapshot.getChildren()){
+                                recipes.add(createRecipeFromSnapShot(dss));
+                            }
+                            Utilities.RecipeMode = "Vegetarian";
+                            callback.onCallbackRecipes(recipes);
+                            clearRecipes();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+    }
+
 
     public void getAllRecipes(final GetRecipesFromDatabase callback){
         AsyncTask.execute(new Runnable() {
@@ -216,7 +244,9 @@ public class Client {
                             for (DataSnapshot dss : dataSnapshot.getChildren()){
                                 recipes.add(createRecipeFromSnapShot(dss));
                             }
+                            Utilities.RecipeMode = "Regular";
                             callback.onCallbackRecipes(recipes);
+                            clearRecipes();
                         }
                     }
 
@@ -228,6 +258,10 @@ public class Client {
             }
         });
 
+    }
+
+    private void clearRecipes() {
+        this.recipes = new ArrayList<>();
     }
 
     private Recipe createRecipeFromSnapShot(DataSnapshot dss){
@@ -253,9 +287,9 @@ public class Client {
     }
 
     public void getUserFromDatabase(final String email, final GetDataFromFirebase myCallback){
-        Clear();
+        clearUser();
         db.child("Users").child(email.replace(".", "|")).child("Details")
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {

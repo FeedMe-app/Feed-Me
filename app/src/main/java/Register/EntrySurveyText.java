@@ -34,6 +34,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import API.Utilities;
+import Database.Client;
+import Database.GetRecipesFromDatabase;
 import Database.InternetConnection;
 import Database.Server;
 import MainActivity.MainActivity;
@@ -105,7 +107,7 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case R.id.nextBtn:
-                goToImageSurvey();
+                checkForVegan();
                 break;
 
             case R.id.continueBtn:
@@ -115,6 +117,33 @@ public class EntrySurveyText extends AppCompatActivity implements View.OnClickLi
                 else
                 CompleteRegistration();
                 break;
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void checkForVegan(){
+        if (FoodType != "Regular"){
+            Client.The().getVegetarianRecipes(new GetRecipesFromDatabase() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+                @Override
+                public void onCallbackRecipes(List<Recipe> recipes) {
+                    Utilities.recipes = recipes;
+                    goToImageSurvey();
+                }
+            });
+        }
+        else if(Utilities.RecipeMode == "Vegetarian"){
+            Client.The().getAllRecipes(new GetRecipesFromDatabase() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+                @Override
+                public void onCallbackRecipes(List<Recipe> recipes) {
+                    Utilities.recipes = recipes;
+                    goToImageSurvey();
+                }
+            });
+        }
+        else {
+            goToImageSurvey();
         }
     }
 
