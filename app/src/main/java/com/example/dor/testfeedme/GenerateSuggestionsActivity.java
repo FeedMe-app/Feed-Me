@@ -43,34 +43,32 @@ import Users.RegularUser;
 public class GenerateSuggestionsActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
 
-    DrawerLayout drawerLayout;
-    ActionBarDrawerToggle aToggle;
-    String userEmail;
-    RegularUser userDetails;
-    NavigationView navigationView;
-    private Button feedMeBtn;
-    private Button addIngBtn;
-    boolean isFinishLoadingUser;
-    private List<String> ingredients;
-    private List<String> chosenIng;
-    private Button updateBTN;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle aToggle;
+    private String userEmail;
+    private RegularUser userDetails;
+    private NavigationView navigationView;
+    private Button feedMeBtn, addIngBtn, updateBTN;
+    private List<String> ingredients, chosenIng;
     private List<Recipe> recipesToChooseFrom;
     private int currRecipeIndex;
     private ImageView im;
     private DownloadImageTask imageViewHandler;
     private TextView tv;
-    private boolean initialized;
-    LinearLayout search;
-    LinearLayout searchHeadline;
-    private boolean isUpdate;
+    private boolean initialized, isUpdate, isFinishLoadingUser;
+    LinearLayout search, searchHeadline;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_suggestions);
+
         chosenIng = new ArrayList<>();
         findViewById(R.id.feedMeBtn).setEnabled(false);
+        //get user email from MainActivity
         Bundle data = getIntent().getExtras();
         userEmail = data.getString("userEmail");
+
         getUserDetails();
         initialized = true;
     }
@@ -85,10 +83,16 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        //Initialize FeedME button and Premium search
                         InitializeButtonListener();
-                        InitializeSideBarMenu();
+
+                        //Initialize Side menu
                         addFullNameToHeaderMenu();
+                        InitializeSideBarMenu();
+
+                        //Initialize search for premium user
                         initializePremium();
+
                         handleSpinnerEnd();
                     }
                 });
@@ -103,6 +107,57 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         findViewById(R.id.mainLinearLayout).setVisibility(View.VISIBLE);
     }
 
+
+    //Initialize FeedME button and Premium search
+    private void InitializeButtonListener() {
+        feedMeBtn = findViewById(R.id.feedMeBtn);
+        feedMeBtn.setEnabled(true);
+        feedMeBtn.setOnClickListener(this);
+        //Initialize all the ingredients for Premium user search
+        initializeIngAdding();
+    }
+
+
+    //Initialize all the ingredients for Premium user search
+    private void initializeIngAdding()
+    {
+        //Initialize all the ingredients to initialize List<String>
+        GetAllIngredients();
+
+        addIngBtn = findViewById(R.id.addIngBtn);
+        addIngBtn.setOnClickListener(this);
+    }
+
+
+
+    //Initialize all the ingredients to initialize List<String>
+    private void GetAllIngredients(){
+        setUtilitiesContext();
+        this.ingredients = Utilities.getIngredients();
+    }
+
+
+
+    private void setUtilitiesContext(){
+        Utilities.setContext(this);
+    }
+
+
+
+    /////////////////////// Premium User - search bu ingredients ///////////////////////
+
+
+    //Add ingredient that premium user selected to chosenIng List
+    private void addIng() {
+        String s = ((AutoCompleteTextView)findViewById(R.id.IngSearch)).getText().toString();
+        if(!s.equals(""))
+            chosenIng.add(s);
+    }
+
+
+
+
+    //Initialize search for premium user
     private void initializePremium()
     {
         search = findViewById(R.id.SearchLinearLayout);
@@ -112,33 +167,28 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
             search.setVisibility(View.GONE);
             searchHeadline.setVisibility(View.GONE);
         }
-        else {
+        //Initialize search by ingredients for premium user
+        else
             InitializeTextViewListeners();
-        }
+
     }
 
-    private void InitializeButtonListener() {
-        feedMeBtn = findViewById(R.id.feedMeBtn);
-        feedMeBtn.setEnabled(true);
-        feedMeBtn.setOnClickListener(this);
-        initializeIngAdding();
+
+
+    //Initialize search by ingredients for premium user
+    private void InitializeTextViewListeners() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
+                this.ingredients);
+
+        ((AutoCompleteTextView)findViewById(R.id.IngSearch)).setAdapter(adapter);
+        //Add all the ingredients to complete text search
+        InitializeTextViewListener(R.id.IngSearch, R.id.addIngBtn);
+
     }
 
-    private void addIng() {
-        String s = ((AutoCompleteTextView)findViewById(R.id.IngSearch)).getText().toString();
-        if(!s.equals(""))
-            chosenIng.add(s);
-    }
 
-    private void setUtilitiesContext(){
-        Utilities.setContext(this);
-    }
 
-    private void GetAllIngredients(){
-        setUtilitiesContext();
-        this.ingredients = Utilities.getIngredients();
-    }
-
+    //Add all the ingredients to complete text search
     private void InitializeTextViewListener(int tvId, final int btnId){
 
         ((AutoCompleteTextView)findViewById(tvId)).addTextChangedListener(new TextWatcher() {
@@ -164,189 +214,11 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         });
     }
 
-    private void InitializeTextViewListeners() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
-                this.ingredients);
-
-        ((AutoCompleteTextView)findViewById(R.id.IngSearch)).setAdapter(adapter);
-        InitializeTextViewListener(R.id.IngSearch, R.id.addIngBtn);
-
-    }
-
-    private void initializeIngAdding()
-    {
-        GetAllIngredients();
-
-        addIngBtn = findViewById(R.id.addIngBtn);
-        addIngBtn.setOnClickListener(this);
-    }
-    private void InitializeSideBarMenu() {
-        drawerLayout = findViewById(R.id.drawer);
-        aToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.open, R.string.close);
-        drawerLayout.addDrawerListener(aToggle);
-        aToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // declaring the NavigationView
-        navigationView = findViewById(R.id.menuLayout);
-        // assigning the listener to the NavigationView
-        navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(aToggle.onOptionsItemSelected(item))
-            return true;
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void addFullNameToHeaderMenu(){
-        NavigationView navigationView = findViewById(R.id.menuLayout);
-        View headerView = navigationView.inflateHeaderView(R.layout.header_menu);
-
-        TextView emailMenu = headerView.findViewById(R.id.email_menu);
-        emailMenu.setText(userDetails.getEmail());
-
-        TextView fullnameMenu = headerView.findViewById(R.id.name_menu);
-        fullnameMenu.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
-
-        TextView classifictionMenu = headerView.findViewById(R.id.classifiction_menu);
-        classifictionMenu.setText(userDetails.getUserClassification());
-    }
-
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-        menuItem.setChecked(true);
-
-        switch (menuItem.getItemId()) {
-            case R.id.profile:
-                profileMenu();
-                break;
-            case R.id.recipeHistory:
-                // do you click actions for the second selection
-                break;
-            case R.id.share:
-                // do you click actions for the third selection
-                break;
-            case R.id.setting:
-                settingMenu();
-                break;
-            case R.id.logOut:
-                logOutMenu();
-                break;
-        }
-
-        return false;
-
-    }
-
-    private void profileMenu(){
-        setContentView(R.layout.profile_menu);
-
-        TextView emailProfile = findViewById(R.id.email_profile);
-        emailProfile.setText(userDetails.getEmail());
-
-        TextView fullnameProfile = findViewById(R.id.name_profile);
-        fullnameProfile.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
-
-        TextView premium = findViewById(R.id.Premium);
-        String text = (userDetails.isPremium()) ? "Premium" : "Premium Not Actived";
-        premium.setText(text);
-
-        TextView classifictionProfile = findViewById(R.id.classificrion_profile);
-        classifictionProfile.setText(userDetails.getUserClassification());
-
-        TextView yearOfBirthProfile = findViewById(R.id.yearOfBirth_profile);
-        yearOfBirthProfile.setText(userDetails.getYearOfBirth());
-    }
-
-    private void logOutMenu(){
-        Client.The().logOutUser();
-        Intent intent = new Intent(GenerateSuggestionsActivity.this, MainActivity.MainActivity.class);
-        finish();
-        startActivity(intent);
-
-    }
 
 
+    /////////////////////// END Premium User - search bu ingredients ///////////////////////
 
-    private void settingMenu(){
-        setContentView(R.layout.setting_menu);
 
-        final EditText emailSetting = findViewById(R.id.setting_email);
-        emailSetting.setText(userDetails.getEmail());
-
-        final EditText firstNameSetting = findViewById(R.id.setting_firstName);
-        firstNameSetting.setText(userDetails.getFirstName());
-
-        final EditText lastNameSetting = findViewById(R.id.setting_lastName);
-        lastNameSetting.setText(userDetails.getLastName());
-
-        final EditText yearOfBirthSetting = findViewById(R.id.setting_yearOfName);
-        yearOfBirthSetting.setText(userDetails.getYearOfBirth());
-
-        EditText classificationSetting = findViewById(R.id.setting_classification);
-        classificationSetting.setText(userDetails.getUserClassification());
-
-        EditText dislikeSetting = findViewById(R.id.setting_dislike);
-        if(!userDetails.getDislikes().isEmpty()){
-            String s = userDetails.getDislikes().get(0);
-            for(int i = 1; i<userDetails.getDislikes().size(); i++)
-                s = s + ", " + userDetails.getDislikes().get(i);
-            dislikeSetting.setText(s);
-        }
-        else
-            dislikeSetting.setText("No Dislike chooses");
-
-        TextView allergiesSetting = findViewById(R.id.setting_allergies);
-        if(!userDetails.getAllergies().isEmpty()){
-            String t = userDetails.getAllergies().get(0);
-            for(int i = 1; i<userDetails.getAllergies().size(); i++)
-                t = t + ", " + userDetails.getAllergies().get(i);
-            allergiesSetting.setText(t);
-        }
-        else
-            allergiesSetting.setText("No Allergies chooses");
-
-        isUpdate = false;
-
-        updateBTN = findViewById(R.id.setting_updateButton);
-        updateBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!userDetails.getFirstName().equals(firstNameSetting.getText().toString())) {
-                    userDetails.setFirstName(firstNameSetting.getText().toString());
-                    isUpdate = true;
-                }
-
-                if (!userDetails.getLastName().equals(lastNameSetting.getText().toString())) {
-                    userDetails.setLastName(lastNameSetting.getText().toString());
-                    isUpdate = true;
-                }
-
-                if (!userDetails.getYearOfBirth().equals(yearOfBirthSetting.getText().toString())) {
-                    if (yearOfBirthSetting.getText().toString().length() != 4) {
-                        yearOfBirthSetting.setError(getString(R.string.short_tearOfBirth));
-                        yearOfBirthSetting.requestFocus();
-                        isUpdate = false;
-                    } else {
-                        userDetails.setYearOfBirth(yearOfBirthSetting.getText().toString());
-                        isUpdate = true;
-                    }
-                }
-
-                if(isUpdate){
-                    Server.The().updateUserDetails(emailSetting.getText().toString(), userDetails);
-                    setContentView(R.layout.activity_generate_suggestions);
-                    InitializeButtonListener();
-                    InitializeSideBarMenu();
-                }
-
-            }
-
-        });
-    }
 
 
 
@@ -463,6 +335,194 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private void generateNewRecipe(){
         showNewRecipe();
     }
+
+
+
+
+    //////////// Side Menu ////////////////
+
+    private void InitializeSideBarMenu() {
+        drawerLayout = findViewById(R.id.drawer);
+        aToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(aToggle);
+        aToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // declaring the NavigationView
+        navigationView = findViewById(R.id.menuLayout);
+        // assigning the listener to the NavigationView
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+
+
+    private void addFullNameToHeaderMenu(){
+        NavigationView navigationView = findViewById(R.id.menuLayout);
+        View headerView = navigationView.inflateHeaderView(R.layout.header_menu);
+
+        TextView emailMenu = headerView.findViewById(R.id.email_menu);
+        emailMenu.setText(userDetails.getEmail());
+
+        TextView fullnameMenu = headerView.findViewById(R.id.name_menu);
+        fullnameMenu.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
+
+        TextView classifictionMenu = headerView.findViewById(R.id.classifiction_menu);
+        classifictionMenu.setText(userDetails.getUserClassification());
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(aToggle.onOptionsItemSelected(item))
+            return true;
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+        menuItem.setChecked(true);
+
+        switch (menuItem.getItemId()) {
+            case R.id.profile:
+                profileMenu();
+                break;
+            case R.id.recipeHistory:
+                // do you click actions for the second selection
+                break;
+            case R.id.share:
+                // do you click actions for the third selection
+                break;
+            case R.id.setting:
+                settingMenu();
+                break;
+            case R.id.logOut:
+                logOutMenu();
+                break;
+        }
+
+        return false;
+
+    }
+
+
+
+    private void profileMenu(){
+        setContentView(R.layout.profile_menu);
+
+        TextView emailProfile = findViewById(R.id.email_profile);
+        emailProfile.setText(userDetails.getEmail());
+
+        TextView fullnameProfile = findViewById(R.id.name_profile);
+        fullnameProfile.setText(userDetails.getFirstName() + " " + userDetails.getLastName());
+
+        TextView premium = findViewById(R.id.Premium);
+        String text = (userDetails.isPremium()) ? "Premium" : "Premium Not Actived";
+        premium.setText(text);
+
+        TextView classifictionProfile = findViewById(R.id.classificrion_profile);
+        classifictionProfile.setText(userDetails.getUserClassification());
+
+        TextView yearOfBirthProfile = findViewById(R.id.yearOfBirth_profile);
+        yearOfBirthProfile.setText(userDetails.getYearOfBirth());
+    }
+
+
+
+    private void logOutMenu(){
+        Client.The().logOutUser();
+        Intent intent = new Intent(GenerateSuggestionsActivity.this, MainActivity.MainActivity.class);
+        finish();
+        startActivity(intent);
+
+    }
+
+
+
+    private void settingMenu(){
+        setContentView(R.layout.setting_menu);
+
+        final EditText emailSetting = findViewById(R.id.setting_email);
+        emailSetting.setText(userDetails.getEmail());
+
+        final EditText firstNameSetting = findViewById(R.id.setting_firstName);
+        firstNameSetting.setText(userDetails.getFirstName());
+
+        final EditText lastNameSetting = findViewById(R.id.setting_lastName);
+        lastNameSetting.setText(userDetails.getLastName());
+
+        final EditText yearOfBirthSetting = findViewById(R.id.setting_yearOfName);
+        yearOfBirthSetting.setText(userDetails.getYearOfBirth());
+
+        EditText classificationSetting = findViewById(R.id.setting_classification);
+        classificationSetting.setText(userDetails.getUserClassification());
+
+        EditText dislikeSetting = findViewById(R.id.setting_dislike);
+        if(!userDetails.getDislikes().isEmpty()){
+            String s = userDetails.getDislikes().get(0);
+            for(int i = 1; i<userDetails.getDislikes().size(); i++)
+                s = s + ", " + userDetails.getDislikes().get(i);
+            dislikeSetting.setText(s);
+        }
+        else
+            dislikeSetting.setText("No Dislike chooses");
+
+        TextView allergiesSetting = findViewById(R.id.setting_allergies);
+        if(!userDetails.getAllergies().isEmpty()){
+            String t = userDetails.getAllergies().get(0);
+            for(int i = 1; i<userDetails.getAllergies().size(); i++)
+                t = t + ", " + userDetails.getAllergies().get(i);
+            allergiesSetting.setText(t);
+        }
+        else
+            allergiesSetting.setText("No Allergies chooses");
+
+        isUpdate = false;
+
+        updateBTN = findViewById(R.id.setting_updateButton);
+        updateBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!userDetails.getFirstName().equals(firstNameSetting.getText().toString())) {
+                    userDetails.setFirstName(firstNameSetting.getText().toString());
+                    isUpdate = true;
+                }
+
+                if (!userDetails.getLastName().equals(lastNameSetting.getText().toString())) {
+                    userDetails.setLastName(lastNameSetting.getText().toString());
+                    isUpdate = true;
+                }
+
+                if (!userDetails.getYearOfBirth().equals(yearOfBirthSetting.getText().toString())) {
+                    if (yearOfBirthSetting.getText().toString().length() != 4) {
+                        yearOfBirthSetting.setError(getString(R.string.short_tearOfBirth));
+                        yearOfBirthSetting.requestFocus();
+                        isUpdate = false;
+                    } else {
+                        userDetails.setYearOfBirth(yearOfBirthSetting.getText().toString());
+                        isUpdate = true;
+                    }
+                }
+
+                if(isUpdate){
+                    Server.The().updateUserDetails(emailSetting.getText().toString(), userDetails);
+                    setContentView(R.layout.activity_generate_suggestions);
+                    InitializeButtonListener();
+                    InitializeSideBarMenu();
+                }
+
+            }
+
+        });
+    }
+
+    ////////////End Side Menu ////////////////
+
+
+
 
     @Override
     public void onBackPressed() {
