@@ -341,6 +341,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                     setContentView(R.layout.activity_generate_suggestions);
                     InitializeButtonListener();
                     InitializeSideBarMenu();
+                    initializePremium();
+                    handleSpinnerEnd();
                 }
 
             }

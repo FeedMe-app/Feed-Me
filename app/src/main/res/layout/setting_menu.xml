@@ -32,7 +32,7 @@
     <ScrollView
         android:id="@+id/scrollBar_Setting"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="80dp"
         android:fillViewport="true">
 
@@ -271,23 +271,30 @@
                         android:background="@color/grey" />
 
                 </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
 
             </LinearLayout>
 
+            <Button
+                android:id="@+id/setting_updateButton"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dip"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorPrimary"
+                android:text="Update"
+                android:textColor="@color/white" />
+
         </RelativeLayout>
+
+
 
     </ScrollView>
 
 
 
-        <Button
-            android:id="@+id/setting_updateButton"
-            android:layout_below="@+id/scrollBar_Setting"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dip"
-            android:background="@color/colorPrimary"
-            android:text="Update"
-            android:textColor="@color/white" />
+
 
 </RelativeLayout>
