@@ -1,12 +1,10 @@
-package com.example.dor.testfeedme;
+package FeedMeButton;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -24,6 +22,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.dor.testfeedme.R;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -36,7 +37,6 @@ import Database.GetRecipesFromDatabase;
 import Database.Server;
 import Models.DownloadImageTask;
 import Models.Recipe;
-import Register.OnEmailCheckListener;
 import Register.OnSwipeTouchListener;
 import Users.RegularUser;
 

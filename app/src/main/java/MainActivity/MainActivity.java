@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dor.testfeedme.GenerateSuggestionsActivity;
-import com.example.dor.testfeedme.GuestActivity;
+import FeedMeButton.GenerateSuggestionsActivity;
+import Users.GuestActivity;
 import com.example.dor.testfeedme.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme;
+package FeedMeButton;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.dor.testfeedme.R;
 
 import org.w3c.dom.Text;
 

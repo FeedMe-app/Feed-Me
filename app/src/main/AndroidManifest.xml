@@ -19,9 +19,9 @@
         <activity android:name="Register.signUp" />
         <activity android:name="Register.EntrySurveyText" />
         <activity android:name="Register.ResetPassword" />
-        <activity android:name=".GenerateSuggestionsActivity" />
-        <activity android:name=".ShowRecipeActivity" />
-        <activity android:name=".GuestActivity"></activity>
+        <activity android:name="FeedMeButton.GenerateSuggestionsActivity" />
+        <activity android:name="FeedMeButton.ShowRecipeActivity" />
+        <activity android:name="Users.GuestActivity"></activity>
     </application>
 
 </manifest>

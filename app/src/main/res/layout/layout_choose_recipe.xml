@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drawer"
-    tools:context=".GenerateSuggestionsActivity">
+    tools:context="FeedMeButton.GenerateSuggestionsActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,7 +16,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="16dp"
-        tools:context=".GenerateSuggestionsActivity">
+        tools:context="FeedMeButton.GenerateSuggestionsActivity">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -47,8 +47,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="@android:color/white"
-        app:itemTextColor="@color/common_google_signin_btn_text_light_disabled"
-        app:itemIconTint="@color/common_google_signin_btn_text_light_disabled"
+        app:itemTextColor="@color/grey"
+        app:itemIconTint="@color/grey"
         app:menu="@menu/drawer_menu"
         android:layout_gravity="start">
 

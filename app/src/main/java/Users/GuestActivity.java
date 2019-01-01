@@ -1,4 +1,4 @@
-package com.example.dor.testfeedme;
+package Users;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,17 +10,15 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 
+import com.example.dor.testfeedme.R;
+
 import java.util.List;
 
 import API.Utilities;
 import Database.Client;
-import Database.GetDataFromFirebase;
 import Database.GetRecipeFromDatabase;
-import Database.GetRecipesFromDatabase;
-import Database.Server;
 import MainActivity.MainActivity;
 import Models.Recipe;
-import Users.RegularUser;
 
 public class GuestActivity extends AppCompatActivity implements View.OnClickListener {
     LinearLayout search;
@@ -47,7 +45,7 @@ public class GuestActivity extends AppCompatActivity implements View.OnClickList
                 Client.The().getRecipeByName(getRecipeName(), new GetRecipeFromDatabase() {
                     @Override
                     public void onCallbackRecipe(Recipe recipe) {
-                        Intent ShowRecipeActivity = new Intent(GuestActivity.this, ShowRecipeActivity.class);
+                        Intent ShowRecipeActivity = new Intent(GuestActivity.this, FeedMeButton.ShowRecipeActivity.class);
                         Recipe curr = recipe;
                         ShowRecipeActivity.putExtra("currRecipe", curr);
                         ShowRecipeActivity.putExtra("currUser",user);
