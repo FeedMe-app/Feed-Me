@@ -114,4 +114,17 @@ public class Server{
         db.child("Users").child(userEmail.replace(".","|")).child("RecipeHistory")
                 .setValue(new ArrayList<>(history));
     }
+
+
+    public void updateUserDetails(String userEmail, RegularUser user){
+
+        db.child("Users").child(userEmail.replace(".","|")).child("Details").child("firstName")
+                .setValue(user.getFirstName());
+
+        db.child("Users").child(userEmail.replace(".","|")).child("Details").child("lastName")
+                .setValue(user.getLastName());
+
+        db.child("Users").child(userEmail.replace(".","|")).child("Details").child("yearOfBirth")
+                .setValue(user.getYearOfBirth());
+    }
 }

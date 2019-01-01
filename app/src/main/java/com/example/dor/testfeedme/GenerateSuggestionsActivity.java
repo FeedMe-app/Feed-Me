@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ import Database.GetRecipesFromDatabase;
 import Database.Server;
 import Models.DownloadImageTask;
 import Models.Recipe;
+import Register.OnEmailCheckListener;
 import Register.OnSwipeTouchListener;
 import Users.RegularUser;
 
@@ -51,6 +53,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     boolean isFinishLoadingUser;
     private List<String> ingredients;
     private List<String> chosenIng;
+    private Button updateBTN;
     private List<Recipe> recipesToChooseFrom;
     private int currRecipeIndex;
     private ImageView im;
@@ -59,6 +62,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
     private boolean initialized;
     LinearLayout search;
     LinearLayout searchHeadline;
+    private boolean isUpdate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,7 +229,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 // do you click actions for the third selection
                 break;
             case R.id.setting:
-                // do you click actions for the third selection
+                settingMenu();
                 break;
             case R.id.logOut:
                 logOutMenu();
@@ -263,6 +267,88 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         startActivity(intent);
 
     }
+
+
+
+    private void settingMenu(){
+        setContentView(R.layout.setting_menu);
+
+        final EditText emailSetting = findViewById(R.id.setting_email);
+        emailSetting.setText(userDetails.getEmail());
+
+        final EditText firstNameSetting = findViewById(R.id.setting_firstName);
+        firstNameSetting.setText(userDetails.getFirstName());
+
+        final EditText lastNameSetting = findViewById(R.id.setting_lastName);
+        lastNameSetting.setText(userDetails.getLastName());
+
+        final EditText yearOfBirthSetting = findViewById(R.id.setting_yearOfName);
+        yearOfBirthSetting.setText(userDetails.getYearOfBirth());
+
+        EditText classificationSetting = findViewById(R.id.setting_classification);
+        classificationSetting.setText(userDetails.getUserClassification());
+
+        EditText dislikeSetting = findViewById(R.id.setting_dislike);
+        if(!userDetails.getDislikes().isEmpty()){
+            String s = userDetails.getDislikes().get(0);
+            for(int i = 1; i<userDetails.getDislikes().size(); i++)
+                s = s + ", " + userDetails.getDislikes().get(i);
+            dislikeSetting.setText(s);
+        }
+        else
+            dislikeSetting.setText("No Dislike chooses");
+
+        TextView allergiesSetting = findViewById(R.id.setting_allergies);
+        if(!userDetails.getAllergies().isEmpty()){
+            String t = userDetails.getAllergies().get(0);
+            for(int i = 1; i<userDetails.getAllergies().size(); i++)
+                t = t + ", " + userDetails.getAllergies().get(i);
+            allergiesSetting.setText(t);
+        }
+        else
+            allergiesSetting.setText("No Allergies chooses");
+
+        isUpdate = false;
+
+        updateBTN = findViewById(R.id.setting_updateButton);
+        updateBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!userDetails.getFirstName().equals(firstNameSetting.getText().toString())) {
+                    userDetails.setFirstName(firstNameSetting.getText().toString());
+                    isUpdate = true;
+                }
+
+                if (!userDetails.getLastName().equals(lastNameSetting.getText().toString())) {
+                    userDetails.setLastName(lastNameSetting.getText().toString());
+                    isUpdate = true;
+                }
+
+                if (!userDetails.getYearOfBirth().equals(yearOfBirthSetting.getText().toString())) {
+                    if (yearOfBirthSetting.getText().toString().length() != 4) {
+                        yearOfBirthSetting.setError(getString(R.string.short_tearOfBirth));
+                        yearOfBirthSetting.requestFocus();
+                        isUpdate = false;
+                    } else {
+                        userDetails.setYearOfBirth(yearOfBirthSetting.getText().toString());
+                        isUpdate = true;
+                    }
+                }
+
+                if(isUpdate){
+                    Server.The().updateUserDetails(emailSetting.getText().toString(), userDetails);
+                    setContentView(R.layout.activity_generate_suggestions);
+                    InitializeButtonListener();
+                    InitializeSideBarMenu();
+                }
+
+            }
+
+        });
+    }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void HandleUserChooseRecipe() {
@@ -307,6 +393,8 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
         }
         Log.i("SIZE:", (String.valueOf(recipesToChooseFrom.size())));
     }
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

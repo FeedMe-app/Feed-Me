@@ -122,7 +122,7 @@ public class RegularUser implements user, Parcelable {
 
 
 
-    public List getAllergies() {
+    public List<String> getAllergies() {
         return allergies;
     }
 
