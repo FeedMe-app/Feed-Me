@@ -487,14 +487,49 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
             public void onClick(View v) {
 
                 if (!userDetails.getFirstName().equals(firstNameSetting.getText().toString())) {
-                    userDetails.setFirstName(firstNameSetting.getText().toString());
-                    isUpdate = true;
+
+                    if (!firstNameSetting.getText().toString().matches("[a-zA-Z]+")) {
+                        String msg;
+                        if (firstNameSetting.getText().toString().isEmpty()) {
+                            msg = getString(R.string.requiredError);
+                        } else {
+                            msg = getString(R.string.onlyLettersError);
+                        }
+                        firstNameSetting.setError(msg);
+                        firstNameSetting.requestFocus();
+                    }
+
+                    else{
+                        userDetails.setFirstName(firstNameSetting.getText().toString());
+                        isUpdate = true;
+                    }
+
                 }
 
+
+
                 if (!userDetails.getLastName().equals(lastNameSetting.getText().toString())) {
-                    userDetails.setLastName(lastNameSetting.getText().toString());
-                    isUpdate = true;
+
+                    if (!lastNameSetting.getText().toString().matches("[a-zA-Z]+")) {
+                        String msg;
+                        if (lastNameSetting.getText().toString().isEmpty()) {
+                            msg = getString(R.string.requiredError);
+                        } else {
+                            msg = getString(R.string.onlyLettersError);
+                        }
+                        lastNameSetting.setError(msg);
+                        lastNameSetting.requestFocus();
+                    }
+
+                    else{
+                        userDetails.setFirstName(lastNameSetting.getText().toString());
+                        isUpdate = true;
+                    }
+
                 }
+
+
+
 
                 if (!userDetails.getYearOfBirth().equals(yearOfBirthSetting.getText().toString())) {
                     if (yearOfBirthSetting.getText().toString().length() != 4) {
@@ -510,10 +545,7 @@ public class GenerateSuggestionsActivity extends AppCompatActivity implements
                 if(isUpdate){
                     Server.The().updateUserDetails(emailSetting.getText().toString(), userDetails);
                     setContentView(R.layout.activity_generate_suggestions);
-                    InitializeButtonListener();
-                    InitializeSideBarMenu();
-                    initializePremium();
-                    handleSpinnerEnd();
+                    onBackPressed();
                 }
 
             }
