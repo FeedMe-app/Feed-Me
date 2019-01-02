@@ -41,22 +41,26 @@ public class signUp extends AppCompatActivity implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.signUp_button:
-                //Check if email exists
-             Server.The().checkIfEmailExists(email_SignUp.getText().toString(), new OnEmailCheckListener() {
-                 @Override
-                 public void onSucess(Boolean emailExist) {
-                             if (!emailExist) {
-                                 email_SignUp.setError(getString(R.string.email_exist));
-                                 email_SignUp.requestFocus();
-                                 isExists = false;
-                             } else{
-                                 isExists = true;
-                                 if (ValidateFields()) {
-                                     goToEntrySurvey();
-                                 }
-                             }
-                 }
-             });
+                if (ValidateFields()) {
+                    //Check if email exists
+                    Server.The().checkIfEmailExists(email_SignUp.getText().toString(), new OnEmailCheckListener() {
+                        @Override
+                        public void onSucess(Boolean emailExist) {
+
+                            if (!emailExist) {
+                                email_SignUp.setError(getString(R.string.email_exist));
+                                email_SignUp.requestFocus();
+                                isExists = false;
+                            } else{
+                                isExists = true;
+
+                            }
+                        }
+                    });
+                    if(isExists)
+                    goToEntrySurvey();
+                }
+
              break;
         }
     }
